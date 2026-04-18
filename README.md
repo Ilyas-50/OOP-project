@@ -1,17 +1,20 @@
 # OOP-project
 oop team project skull emoji
 
-hints for teamates:
-git clone https://github.com/Ilyas-50/OOP-project.git
+hints for team:
+**1. Начало работы:** 
+`git clone https://github.com/Ilyas-50/OOP-project.git`  
+`cd OOP-project`
 
-Создать ветку на которой буду работать:
-git checkout -b *название ветки, например ветка1*
-git add .
-git commit -m "bla bla bla"
-git push origin *ветка1*
+**2. Создание ветки и сохранение:** 
+`git checkout -b название_ветки`  
+`git add .`  
+`git commit -m "что именно сделал"`  
+`git push origin название_ветки`
 
-Закончил таску и надо запушить в main:
-git checkout main
-git pull origin main
-git merge *ветка1*
-git push origin main
+**3. Синхронизация с main:** 
+`git checkout main`  
+`git pull origin main`  
+`git checkout название_ветки`  
+`git merge main`  
+`git push origin название_ветки`
