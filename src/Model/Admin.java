@@ -1,42 +1,24 @@
+package Model;
 
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
 public class Admin extends Employee {
 
-    /**
-     * Default constructor
-     */
     public Admin() {
+        super();
     }
 
-    /**
-     * @param u 
-     * @return
-     */
     public void addUser(User u) {
-        // TODO implement here
-        return null;
+//        DataStorage.getInstance().getUsers().add(u);
     }
 
-    /**
-     * @param u 
-     * @return
-     */
     public void removeUser(User u) {
-        // TODO implement here
-        return null;
+//        DataStorage.getInstance().getUsers().remove(u);
     }
 
-    /**
-     * @return
-     */
-    public List<String> viewLogs() {
-        // TODO implement here
-        return null;
-    }
+//    public List<String> viewLogs() {
+//        return new ArrayList<>();
+//    }
 
 }
