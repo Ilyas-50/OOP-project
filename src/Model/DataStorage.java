@@ -3,59 +3,42 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
-public class DataStorage {
+public class DataStorage implements Serializable {
 
-    /**
-     * Default constructor
-     */
-    public DataStorage() {
-    }
-
-    /**
-     * 
-     */
-    private static void instance: DataStorage;
-
-    /**
-     * 
-     */
-    private void users: List<User>;
-
-    /**
-     * 
-     */
-    private void courses: List<Course>;
-
-    /**
-     * 
-     */
+    private static DataStorage instance;
+    private List<User> users;
+    private List<Course> courses;
     private List<ResearchPaper> allPapers;
 
-
-
-
-    /**
-     * 
-     */
-    public static void getInstance(): DataStorage() {
-        // TODO implement here
+    public DataStorage() {
+        this.users = new ArrayList<>();
+        this.courses = new ArrayList<>();
+        this.allPapers = new ArrayList<>();
     }
 
-    /**
-     * 
-     */
-    public void save(): void() {
-        // TODO implement here
+    public static DataStorage getInstance() {
+        if (instance == null) {
+            instance = new DataStorage();
+        }
+        return instance;
     }
 
-    /**
-     * 
-     */
-    public void load(): DataStorage() {
-        // TODO implement here
+    public void save() {
+    }
+
+    public void load() {
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public List<ResearchPaper> getAllPapers() {
+        return allPapers;
     }
 
 }

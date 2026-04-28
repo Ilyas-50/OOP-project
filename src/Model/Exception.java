@@ -3,15 +3,14 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
-public class Exception {
+public class Exception extends java.lang.Exception {
 
-    /**
-     * Default constructor
-     */
     public Exception() {
+        super();
+    }
+
+    public Exception(String message) {
+        super(message);
     }
 
 }

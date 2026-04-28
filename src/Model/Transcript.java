@@ -3,22 +3,12 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
-public class Transcript {
+public class Transcript implements Serializable {
 
-    /**
-     * Default constructor
-     */
+    private List<Mark> marks;
+
     public Transcript() {
+        this.marks = new ArrayList<>();
     }
-
-    /**
-     * 
-     */
-    private void marks: List<Mark>;
-
-
 
 }

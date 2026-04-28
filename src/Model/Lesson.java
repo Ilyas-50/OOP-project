@@ -3,33 +3,13 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
-public class Lesson {
+public class Lesson implements Serializable {
 
-    /**
-     * Default constructor
-     */
+    private LessonType lessonType;
+    private String time;
+    private String room;
+
     public Lesson() {
     }
-
-    /**
-     * 
-     */
-    private void lessonType: LessonType;
-
-    /**
-     * 
-     */
-    private void time: String;
-
-    /**
-     * 
-     */
-    private void room: String;
-
-
-
 
 }

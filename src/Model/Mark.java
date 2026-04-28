@@ -3,57 +3,22 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
-public class Mark {
+public class Mark implements Serializable {
 
-    /**
-     * Default constructor
-     */
+    private double firstAttestation;
+    private double secondAttestation;
+    private double finalExam;
+    private double totalScore;
+    private Course course;
+
     public Mark() {
     }
 
-    /**
-     * 
-     */
-    private void firstAttestation: double;
-
-    /**
-     * 
-     */
-    private void secondAttestation: double;
-
-    /**
-     * 
-     */
-    private void finalExam: double;
-
-    /**
-     * 
-     */
-    private void totalScore: double;
-
-    /**
-     * 
-     */
-    private Course course;
-
-
-
-    /**
-     * @return
-     */
     public double calculateTotal() {
-        // TODO implement here
-        return 0.0d;
+        return 0.0;
     }
 
-    /**
-     * @return
-     */
     public String getLetterDigit() {
-        // TODO implement here
         return "";
     }
 

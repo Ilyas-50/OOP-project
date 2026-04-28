@@ -3,22 +3,14 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
 public class NotAResearcherException extends Exception {
 
-    /**
-     * Default constructor
-     */
     public NotAResearcherException() {
+        super();
     }
 
-    /**
-     * 
-     */
-    public void NotAResearcherException(message: String)() {
-        // TODO implement here
+    public NotAResearcherException(String message) {
+        super(message);
     }
 
 }

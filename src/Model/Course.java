@@ -3,52 +3,16 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
-public class Course {
+public class Course implements Serializable {
 
-    /**
-     * Default constructor
-     */
-    public Course() {
-    }
-
-    /**
-     * 
-     */
-    private void courseCode: String;
-
-    /**
-     * 
-     */
-    private void courseName: String;
-
-    /**
-     * 
-     */
-    private void credits: int;
-
-    /**
-     * 
-     */
-    private void instructors: List<Teacher>;
-
-    /**
-     * 
-     */
-    private void prerequisites: List<Course>;
-
-    /**
-     * 
-     */
+    private String courseCode;
+    private String courseName;
+    private int credits;
+    private List<Teacher> instructors;
+    private List<Course> prerequisites;
     private List<Lesson> lessons;
 
-
-
-
-
-
-
+    public Course() {
+    }
 
 }

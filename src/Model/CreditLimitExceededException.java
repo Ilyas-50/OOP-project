@@ -3,22 +3,14 @@ package Model;
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
 public class CreditLimitExceededException extends Exception {
 
-    /**
-     * Default constructor
-     */
     public CreditLimitExceededException() {
+        super();
     }
 
-    /**
-     * 
-     */
-    public void CreditLimitExceededException(message: String)() {
-        // TODO implement here
+    public CreditLimitExceededException(String message) {
+        super(message);
     }
 
 }
