@@ -1,48 +1,33 @@
-package Model;
+package Model1;
 
 import java.io.*;
 import java.util.*;
 
-/**
- * 
- */
 public class Manager extends Employee {
 
-    /**
-     * Default constructor
-     */
-    public Manager() {
-    }
-
-    /**
-     * 
-     */
     private ManagerType managerType;
 
+    public Manager() {
+        super();
+    }
 
-    /**
-     * @return
-     */
     public void approveRegistration() {
         // TODO implement here
-        return null;
     }
 
-    /**
-     * @param course 
-     * @return
-     */
     public void addCourse(Course course) {
         // TODO implement here
-        return null;
     }
 
-    /**
-     * @return
-     */
     public void viewRequests() {
         // TODO implement here
-        return null;
     }
 
+    public ManagerType getManagerType() {
+        return managerType;
+    }
+
+    public void setManagerType(ManagerType managerType) {
+        this.managerType = managerType;
+    }
 }
