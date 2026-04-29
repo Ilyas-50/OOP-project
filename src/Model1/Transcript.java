@@ -1,9 +1,8 @@
 package Model1;
 
-import java.io.*;
 import java.util.*;
 
-public class Transcript implements Serializable {
+public class Transcript {
 
     private List<Mark> marks;
 

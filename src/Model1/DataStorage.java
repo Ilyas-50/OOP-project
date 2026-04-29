@@ -3,14 +3,14 @@ package Model1;
 import java.io.*;
 import java.util.*;
 
-public class DataStorage implements Serializable {
+public class DataStorage implements java.io.Serializable {
 
     private static DataStorage instance;
     private List<User> users;
     private List<Course> courses;
     private List<ResearchPaper> allPapers;
 
-    public DataStorage() {
+    private DataStorage() { // Singleton
         this.users = new ArrayList<>();
         this.courses = new ArrayList<>();
         this.allPapers = new ArrayList<>();
@@ -23,10 +23,22 @@ public class DataStorage implements Serializable {
         return instance;
     }
 
+    //Serialization
     public void save() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("storage.dat"))) {
+            oos.writeObject(instance);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    //Deserialization
     public void load() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("storage.dat"))) {
+            instance = (DataStorage) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            instance = new DataStorage();
+        }
     }
 
     public List<User> getUsers() {
@@ -40,5 +52,4 @@ public class DataStorage implements Serializable {
     public List<ResearchPaper> getAllPapers() {
         return allPapers;
     }
-
 }

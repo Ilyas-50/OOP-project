@@ -1,9 +1,6 @@
 package Model1;
 
-import java.io.*;
-import java.util.*;
-
-public class Lesson implements Serializable {
+public class Lesson {
 
     private LessonType lessonType;
     private String time;

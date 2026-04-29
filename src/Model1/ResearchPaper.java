@@ -1,9 +1,8 @@
 package Model1;
 
-import java.io.*;
 import java.util.*;
 
-public class ResearchPaper implements Serializable {
+public class ResearchPaper {
 
     private String title;
     private List<Researcher> authors;

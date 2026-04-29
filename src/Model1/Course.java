@@ -1,9 +1,8 @@
 package Model1;
 
-import java.io.*;
 import java.util.*;
 
-public class Course implements Serializable {
+public class Course {
 
     private String courseCode;
     private String courseName;
