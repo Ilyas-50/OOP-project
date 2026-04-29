@@ -10,7 +10,8 @@ public class DataStorage implements java.io.Serializable {
     private List<Course> courses;
     private List<ResearchPaper> allPapers;
 
-    private DataStorage() { // Singleton
+    // Singleton
+    private DataStorage() {
         this.users = new ArrayList<>();
         this.courses = new ArrayList<>();
         this.allPapers = new ArrayList<>();

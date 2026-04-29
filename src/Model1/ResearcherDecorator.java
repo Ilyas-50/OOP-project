@@ -8,30 +8,46 @@ public class ResearcherDecorator implements Researcher {
     private User user;
     private List<ResearchPaper> papers;
 
-    public ResearcherDecorator() {
-    }
-
     public ResearcherDecorator(User user) {
         this.user = user;
         this.papers = new ArrayList<>();
     }
 
+    @Override
     public void printPapers(Comparator<ResearchPaper> c) {
-        // TODO implement here
+//        List<ResearchPaper> sortedPapers = new ArrayList<>(papers);
+//        sortedPapers.sort(c);
+//        for (ResearchPaper p : sortedPapers) {
+//            System.out.println(p);
+//        }
     }
 
+    @Override
     public int calculateHIndex() {
-        // TODO implement here
         return 0;
     }
 
+    @Override
     public void addPaper(ResearchPaper p) {
-        // TODO implement here
+        this.papers.add(p);
     }
 
+    @Override
     public boolean isActive() {
-        // TODO implement here
         return false;
     }
 
+//    @Override
+//    public boolean isActive() {
+//        return !papers.isEmpty();
+//    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public List<ResearchPaper> getPapers() {
+        return papers;
+    }
 }
