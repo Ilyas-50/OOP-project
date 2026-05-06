@@ -3,7 +3,7 @@ package Model1;
 import java.io.*;
 import java.util.*;
 
-public class CreditLimitExceededException extends Exception {
+public class CreditLimitExceededException extends UniversitySystemException {
 
     public CreditLimitExceededException() {
         super();

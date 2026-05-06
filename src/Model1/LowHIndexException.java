@@ -3,7 +3,7 @@ package Model1;
 import java.io.*;
 import java.util.*;
 
-public class LowHIndexException extends Exception {
+public class LowHIndexException extends UniversitySystemException {
 
     public LowHIndexException() {
         super();

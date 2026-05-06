@@ -3,7 +3,7 @@ package Model1;
 import java.io.*;
 import java.util.*;
 
-public class NotAResearcherException extends Exception {
+public class NotAResearcherException extends UniversitySystemException {
 
     public NotAResearcherException() {
         super();
