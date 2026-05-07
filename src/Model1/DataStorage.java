@@ -9,12 +9,15 @@ public class DataStorage implements java.io.Serializable {
     private List<User> users;
     private List<Course> courses;
     private List<ResearchPaper> allPapers;
+    private List<String> systemLogs;
+    private int userCounter = 0;
 
     // Singleton
     private DataStorage() {
         this.users = new ArrayList<>();
         this.courses = new ArrayList<>();
         this.allPapers = new ArrayList<>();
+        this.systemLogs = new ArrayList<>();
     }
 
     public static DataStorage getInstance() {
@@ -42,6 +45,10 @@ public class DataStorage implements java.io.Serializable {
         }
     }
 
+    public int getNextUserId() {
+        return ++userCounter;
+    }
+
     public List<User> getUsers() {
         return users;
     }
@@ -52,5 +59,12 @@ public class DataStorage implements java.io.Serializable {
 
     public List<ResearchPaper> getAllPapers() {
         return allPapers;
+    }
+
+    public List<String> getSystemLogs() {
+        return systemLogs;
+    }
+    public void addLog(String message) {
+        this.systemLogs.add(new Date() + ": " + message);
     }
 }

@@ -4,11 +4,9 @@ import java.io.*;
 import java.util.*;
 
 public class Admin extends Employee {
-    private List<String> logs;
 
     public Admin() {
         super();
-        this.logs = new ArrayList<>();
     }
 
     // Factory
@@ -22,18 +20,19 @@ public class Admin extends Employee {
 
     public void addUser(User u) {
         DataStorage.getInstance().getUsers().add(u);
+        addLog("Admin added user: " + u.getLogin());
     }
 
     public void removeUser(User u) {
         DataStorage.getInstance().getUsers().remove(u);
-        addLog("Removed user: " + u.getId());
+        addLog("Admin removed user: " + u.getLogin());
     }
 
     public List<String> viewLogs() {
-        return logs;
+        return DataStorage.getInstance().getSystemLogs();
     }
 
     public void addLog(String message) {
-        this.logs.add(new Date() + ": " + message);
+        DataStorage.getInstance().addLog(message);
     }
 }
