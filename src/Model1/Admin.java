@@ -21,11 +21,13 @@ public class Admin extends Employee {
     public void addUser(User u) {
         DataStorage.getInstance().getUsers().add(u);
         addLog("Admin added user: " + u.getLogin());
+        DataStorage.getInstance().save();
     }
 
     public void removeUser(User u) {
         DataStorage.getInstance().getUsers().remove(u);
         addLog("Admin removed user: " + u.getLogin());
+        DataStorage.getInstance().save();
     }
 
     public List<String> viewLogs() {
@@ -34,6 +36,7 @@ public class Admin extends Employee {
 
     public void addLog(String message) {
         DataStorage.getInstance().addLog(message);
+        DataStorage.getInstance().save();
     }
 
     public List<User> viewUsers(){

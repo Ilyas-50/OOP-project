@@ -86,7 +86,6 @@ public class UniversitySystem {
             //downcasting
             Admin admin = (Admin) currentUser;
             admin.addUser(newUser);
-            storage.save();
 
             System.out.println("User created successfully! Login: " + newUser.getLogin());
         }
@@ -113,7 +112,7 @@ public class UniversitySystem {
                 else {
                     Admin admin = (Admin) currentUser;
                     admin.removeUser(targetUser);
-                    storage.save();
+
 
                     System.out.println("User '" + loginToDelete + "' deleted successfully.");
                 }
@@ -174,3 +173,23 @@ public class UniversitySystem {
     }
 
 }
+
+//public void showResearcherMenu() {
+//    System.out.println("Sort by: 1. Citations, 2. Date, 3. Length");
+//    String sortChoice = scanner.nextLine();
+//
+//    Researcher res = (Researcher) currentUser;
+//    Comparator<ResearchPaper> selectedComparator;
+//
+//    // В зависимости от выбора подставляем нужную стратегию
+//    if (sortChoice.equals("1")) {
+//        selectedComparator = new CitationsComparator();
+//    } else if (sortChoice.equals("2")) {
+//        selectedComparator = new DateComparator();
+//    } else {
+//        selectedComparator = new LengthComparator();
+//    }
+//
+//    // Передаем ВЫБРАННЫЙ компаратор в метод
+//    res.printPapers(selectedComparator);
+//}
