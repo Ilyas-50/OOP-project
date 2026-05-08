@@ -38,10 +38,21 @@ public class DataStorage implements java.io.Serializable {
 
     //Deserialization
     public void load() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("storage.dat"))) {
-            instance = (DataStorage) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            instance = new DataStorage();
+        File file = new File("storage.dat");
+        if (!file.exists()) return;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            DataStorage loadedData = (DataStorage) ois.readObject();
+
+            // Копируем данные в ТЕКУЩИЙ объект
+            this.users = (loadedData.users != null) ? loadedData.users : new ArrayList<>();
+            this.courses = (loadedData.courses != null) ? loadedData.courses : new ArrayList<>();
+            this.allPapers = (loadedData.allPapers != null) ? loadedData.allPapers : new ArrayList<>();
+            this.systemLogs = (loadedData.systemLogs != null) ? loadedData.systemLogs : new ArrayList<>();
+            this.userCounter = loadedData.userCounter;
+
+        } catch (Exception e) {
+            System.out.println("No existing data found or error loading.");
         }
     }
 

@@ -35,4 +35,8 @@ public class Admin extends Employee {
     public void addLog(String message) {
         DataStorage.getInstance().addLog(message);
     }
+
+    public List<User> viewUsers(){
+        return DataStorage.getInstance().getUsers();
+    }
 }

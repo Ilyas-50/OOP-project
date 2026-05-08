@@ -29,11 +29,15 @@ public class UniversitySystem {
                     isRunning = false;
                 }
             }
+            else{
+                showMenu();
+            }
         }
         storage.save();
     }
 
     public void showMenu() {
+        System.out.println("---------------------------------------------");
         String status = currentUser.getFullStatus();
         if(currentUser instanceof Researcher) {
             System.out.println("Your status: "+ status + "Researcher");
@@ -51,7 +55,7 @@ public class UniversitySystem {
     }
 
     public void showAdminMenu() {
-        System.out.println("1. Add User\n2. Remove User\n3. View Logs\n0. Logout");
+        System.out.println("1. Add User\n2. Remove User\n3. View Logs\n4. View Users\n0. Logout");
         String choice = scanner.nextLine();
 
         if (choice.equals("1")) {
@@ -82,6 +86,7 @@ public class UniversitySystem {
             //downcasting
             Admin admin = (Admin) currentUser;
             admin.addUser(newUser);
+            storage.save();
 
             System.out.println("User created successfully! Login: " + newUser.getLogin());
         }
@@ -108,6 +113,7 @@ public class UniversitySystem {
                 else {
                     Admin admin = (Admin) currentUser;
                     admin.removeUser(targetUser);
+                    storage.save();
 
                     System.out.println("User '" + loginToDelete + "' deleted successfully.");
                 }
@@ -122,6 +128,16 @@ public class UniversitySystem {
             } else {
                 for (String log : logs) {
                     System.out.println(log);
+                }
+            }
+        }
+        else if (choice.equals("4")) {
+            List<User> users = ((Admin) currentUser).viewUsers();
+            if (users.isEmpty()) {
+                System.out.println("Logs are empty");
+            } else {
+                for (User user : users) {
+                    System.out.println(user.getLogin());
                 }
             }
         }
