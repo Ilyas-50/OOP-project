@@ -79,45 +79,39 @@ public class UniversitySystem {
                 s.setYearOfStudy(1);
             }
 
-            storage.getUsers().add(newUser);
-            String logMessage = "Created " + newUser.getFullStatus() + ": " + newUser.getLogin() + " (ID: " + newUser.getId() + ")";
-            ((Admin) currentUser).addLog(logMessage);
+            //downcasting
+            Admin admin = (Admin) currentUser;
+            admin.addUser(newUser);
+
             System.out.println("User created successfully! Login: " + newUser.getLogin());
         }
         else if (choice.equals("2")) {
             System.out.println("Write user's login that you want to delete: ");
             String loginToDelete = scanner.nextLine();
 
-            Iterator<User> iterator = storage.getUsers().iterator();
-            boolean found = false;
-
-            while (iterator.hasNext()) {
-                User u = iterator.next();
-
+            User targetUser = null;
+            for (User u : storage.getUsers()) {
                 if (u.getLogin().equals(loginToDelete)) {
-                    found = true;
-
-                    if (u.equals(currentUser)) {
-                        System.out.println("You cannot delete yourself!");
-                        break;
-                    }
-
-                    if (u instanceof Admin) {
-                        System.out.println("You cannot delete another administrator");
-                        break;
-                    }
-                    iterator.remove();
-                    System.out.println("User '" + loginToDelete + "' deleted successfully.");
-
-                    // log
-                    if (currentUser instanceof Admin) {
-                        ((Admin) currentUser).addLog("Deleted user: " + loginToDelete);
-                    }
+                    targetUser = u;
                     break;
                 }
             }
 
-            if (!found) {
+            if (targetUser != null) {
+
+                if (targetUser.equals(currentUser)) {
+                    System.out.println("Error: You cannot delete yourself!");
+                }
+                else if (targetUser instanceof Admin) {
+                    System.out.println("Error: You cannot delete another administrator!");
+                }
+                else {
+                    Admin admin = (Admin) currentUser;
+                    admin.removeUser(targetUser);
+
+                    System.out.println("User '" + loginToDelete + "' deleted successfully.");
+                }
+            } else {
                 System.out.println("User with login '" + loginToDelete + "' not found.");
             }
         }
@@ -158,6 +152,7 @@ public class UniversitySystem {
 
     public void logout() {
         String logMsg = "User " + currentUser.getLogin() + " logged out.";
+        storage.addLog(logMsg);
         currentUser = null;
         storage.save();
     }
