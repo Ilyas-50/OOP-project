@@ -1,9 +1,7 @@
 package Model1;
 
-import java.io.*;
-import java.util.*;
-
-public class UniversitySystemException extends java.lang.Exception {
+public class UniversitySystemException extends Exception {
+    private static final long serialVersionUID = 1L;
 
     public UniversitySystemException() {
         super();
@@ -12,5 +10,4 @@ public class UniversitySystemException extends java.lang.Exception {
     public UniversitySystemException(String message) {
         super(message);
     }
-
 }
