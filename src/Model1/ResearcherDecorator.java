@@ -1,10 +1,11 @@
 package Model1;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.*;
 
-public class ResearcherDecorator implements Researcher {
+public class ResearcherDecorator implements Researcher, Serializable {
 
+    private static final long serialVersionUID = 1L;
     private User user;
     private List<ResearchPaper> papers;
 
@@ -14,40 +15,51 @@ public class ResearcherDecorator implements Researcher {
     }
 
     @Override
-    public void printPapers(Comparator<ResearchPaper> c) {
-//        List<ResearchPaper> sortedPapers = new ArrayList<>(papers);
-//        sortedPapers.sort(c);
-//        for (ResearchPaper p : sortedPapers) {
-//            System.out.println(p);
-//        }
-    }
-
-    @Override
-    public int calculateHIndex() {
-        return 0;
+    public List<ResearchPaper> getPapers() {
+        return this.papers;
     }
 
     @Override
     public void addPaper(ResearchPaper p) {
         this.papers.add(p);
+        DataStorage.getInstance().getAllPapers().add(p);
+        DataStorage.getInstance().save();
     }
 
     @Override
-    public boolean isActive() {
-        return false;
+    public void printPapers(Comparator<ResearchPaper> c) {
+        if (papers.isEmpty()) {
+            System.out.println("No papers found for this researcher.");
+            return;
+        }
+
+        List<ResearchPaper> sortedPapers = new ArrayList<>(this.papers);
+        sortedPapers.sort(c);
+
+        System.out.println("--- Research Papers for " + user.getLastName() + " ---");
+        for (ResearchPaper p : sortedPapers) {
+            System.out.println(p.getCitationInFormat());
+        }
     }
 
-//    @Override
-//    public boolean isActive() {
-//        return !papers.isEmpty();
-//    }
+    @Override
+    public int calculateHIndex() {
+        if (papers == null || papers.isEmpty()) return 0;
+        List<ResearchPaper> sorted = new ArrayList<>(this.papers);
+        sorted.sort(new CitationsComparator());
 
+        int hIndex = 0;
+        for (int i = 0; i < sorted.size(); i++) {
+            if (sorted.get(i).getCitations() >= (i + 1)) {
+                hIndex = i + 1;
+            } else {
+                break;
+            }
+        }
+        return hIndex;
+    }
 
     public User getUser() {
         return user;
-    }
-
-    public List<ResearchPaper> getPapers() {
-        return papers;
     }
 }

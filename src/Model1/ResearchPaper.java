@@ -13,6 +13,8 @@ public class ResearchPaper implements Serializable {
     private int citations;
     private String doi;
 
+    private
+
     public ResearchPaper(String title, List<Researcher> authors, String journal, int pages, Date date, String doi) {
         this.title = title;
         this.authors = authors;
@@ -23,14 +25,16 @@ public class ResearchPaper implements Serializable {
         this.citations = 0;
     }
 
-//    public String getCitationInFormat() {
-//        StringBuilder authorsList = new StringBuilder();
-//        for (Researcher r : authors) {
-//            authorsList.append(((User)r).getLastName()).append(" "); // Каст к User, чтобы взять фамилию
-//        }
-//        return String.format("%s. \"%s\". %s, %d. DOI: %s",
-//                authorsList.toString().trim(), title, journal, pages, doi);
-//    }
+    public String getCitationInFormat() {
+        List<String> lastNames = new ArrayList<>();
+        for (Researcher r : authors) {
+            User user = (User) r;
+            lastNames.add(user.getLastName());
+        }
+        String authorsStr = String.join(", ", lastNames);
+        return String.format("%s. \"%s\". %s, %d. DOI: %s",
+                authorsStr, title, journal, pages, doi);
+    }
 
     public void addCitation() {
         this.citations++;
