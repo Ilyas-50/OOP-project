@@ -5,7 +5,6 @@ import java.util.*;
 
 public class ResearcherDecorator implements Researcher, Serializable {
 
-    private static final long serialVersionUID = 1L;
     private User user;
     private List<ResearchPaper> papers;
 
@@ -23,6 +22,8 @@ public class ResearcherDecorator implements Researcher, Serializable {
     public void addPaper(ResearchPaper p) {
         this.papers.add(p);
         DataStorage.getInstance().getAllPapers().add(p);
+        String logMsg = String.format("Researcher %s added a new paper: '%s'", user.getLastName(), p.getTitle());
+        DataStorage.getInstance().addLog(logMsg);
         DataStorage.getInstance().save();
     }
 

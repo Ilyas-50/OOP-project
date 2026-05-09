@@ -28,3 +28,8 @@ public class Main {
 }
 
 
+////decorator
+//ResearcherDecorator studentResearcher = new ResearcherDecorator(s);
+//
+//// DataStorage addition
+//admin.addUser((User) (Object) studentResearcher);

@@ -10,6 +10,7 @@ public abstract class User implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    private ResearcherDecorator researcherData; //null if not researcher
 
     public User() {
     }
@@ -57,5 +58,12 @@ public abstract class User implements Serializable {
 
     public String getFullStatus() {
         return this.getClass().getSimpleName();
+    }
+
+    public ResearcherDecorator getResearcherData() {
+        return researcherData;
+    }
+    public void setResearcherData(ResearcherDecorator researcherData) {
+        this.researcherData = researcherData;
     }
 }

@@ -13,8 +13,6 @@ public class ResearchPaper implements Serializable {
     private int citations;
     private String doi;
 
-    private
-
     public ResearchPaper(String title, List<Researcher> authors, String journal, int pages, Date date, String doi) {
         this.title = title;
         this.authors = authors;
@@ -25,11 +23,26 @@ public class ResearchPaper implements Serializable {
         this.citations = 0;
     }
 
+//    public String getCitationInFormat() {
+//        List<String> lastNames = new ArrayList<>();
+//        for (Researcher r : authors) {
+//            User user = (User) r;
+//            lastNames.add(user.getLastName());
+//        }
+//        String authorsStr = String.join(", ", lastNames);
+//        return String.format("%s. \"%s\". %s, %d. DOI: %s",
+//                authorsStr, title, journal, pages, doi);
+//    }
     public String getCitationInFormat() {
         List<String> lastNames = new ArrayList<>();
         for (Researcher r : authors) {
-            User user = (User) r;
-            lastNames.add(user.getLastName());
+            if (r instanceof User) { //на всякйи проверка. потом удалить
+                lastNames.add(((User) r).getLastName());
+            }
+            else if (r instanceof ResearcherDecorator) {
+                User wrappedUser = ((ResearcherDecorator) r).getUser();
+                lastNames.add(wrappedUser.getLastName());
+            }
         }
         String authorsStr = String.join(", ", lastNames);
         return String.format("%s. \"%s\". %s, %d. DOI: %s",

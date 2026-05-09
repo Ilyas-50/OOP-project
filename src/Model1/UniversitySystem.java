@@ -39,23 +39,24 @@ public class UniversitySystem {
     public void showMenu() {
         System.out.println("---------------------------------------------");
         String status = currentUser.getFullStatus();
-        if(currentUser instanceof Researcher) {
-            System.out.println("Your status: "+ status + "Researcher");
-        }
-        else{
-            System.out.println("Your status: "+ status);
-        }
 
-        if(currentUser instanceof Admin){
+        String researcherPrefix = (currentUser.getResearcherData() != null) ? "Researcher " : "";
+        System.out.println("Your status: " + researcherPrefix + status);
+
+        if (currentUser instanceof Admin) {
             showAdminMenu();
-        }
-        if(currentUser instanceof Student){
+        } else if (currentUser instanceof Student) {
             showStudentMenu();
         }
+
+//        if (currentUser.getResearcherData() != null) {
+//            System.out.println("R. Researcher Menu");
+            // Добавим обработку в конкретные меню или вынесем отдельно
+//        }
     }
 
     public void showAdminMenu() {
-        System.out.println("1. Add User\n2. Remove User\n3. View Logs\n4. View Users\n0. Logout");
+        System.out.println("1. Add User\n2. Remove User\n3. View Logs\n4. View Users\n5. Make someone Researcher\n0. Logout");
         String choice = scanner.nextLine();
 
         if (choice.equals("1")) {
@@ -140,13 +141,116 @@ public class UniversitySystem {
                 }
             }
         }
+        else if (choice.equals("5")) {
+            System.out.print("Enter user's login to make him/her a researcher: ");
+            String targetLogin = scanner.nextLine();
+
+            User targetUser = null;
+            for (User u : storage.getUsers()) {
+                if (u.getLogin().equals(targetLogin)) {
+                    targetUser = u;
+                    break;
+                }
+            }
+
+            if (targetUser == null) {
+                System.out.println("User not found.");
+            }
+            else if (targetUser.getResearcherData() != null) {
+                System.out.println("User is already a researcher.");
+            }
+            else {
+                ResearcherDecorator rd = new ResearcherDecorator(targetUser); //decorator
+                targetUser.setResearcherData(rd);
+
+                String msg = String.format("Admin %s assigned Researcher status to %s", currentUser.getLastName(), targetUser.getLogin());
+                storage.addLog(msg);
+                storage.save();
+                System.out.println("Success! " + targetUser.getFirstName() + " is now a researcher.");
+            }
+        }
         else if (choice.equals("0")) {
             logout();
         }
     }
 
-    public void showStudentMenu(){
+    public void showStudentMenu() {
+        System.out.println("1. View Courses\n2. View Marks\n0. Logout");
 
+        if (currentUser.getResearcherData() != null) {
+            System.out.println("R. Researcher Panel");
+        }
+        String choice = scanner.nextLine();
+
+        if (choice.equals("1")) {
+            // courses need to add
+        } else if (choice.equalsIgnoreCase("R") && currentUser.getResearcherData() != null) {
+            showResearcherMenu();
+        } else if (choice.equals("0")) {
+            logout();
+        }
+    }
+
+
+    public void showResearcherMenu() {
+        ResearcherDecorator res = currentUser.getResearcherData();
+        System.out.println("\n--- RESEARCHER MENU ---");
+        System.out.println("1. View Papers");
+        System.out.println("2. Add Paper");
+        System.out.println("3. View H-Index");
+        System.out.println("0. Back");
+
+        String choice = scanner.nextLine();
+
+        switch (choice) {
+            case "1":
+                System.out.println("\nSort by: 1. Citations | 2. Date | 3. Length");
+                String sortChoice = scanner.nextLine();
+
+                Comparator<ResearchPaper> selectedComparator;
+
+                if (sortChoice.equals("1")) {
+                    selectedComparator = new CitationsComparator();
+                } else if (sortChoice.equals("2")) {
+                    selectedComparator = new DateComparator();
+                } else if (sortChoice.equals("3")) {
+                    selectedComparator = new LengthComparator();
+                } else {
+                    System.out.println("Invalid choice, using default (Citations).");
+                    selectedComparator = new CitationsComparator();
+                }
+                res.printPapers(selectedComparator);
+                break;
+            case "2":
+                addNewPaper(res);
+                break;
+            case "3":
+                System.out.println("Your H-Index is: " + res.calculateHIndex());
+                break;
+            case "0":
+                return;
+            default:
+                System.out.println("Invalid option.");
+                break;
+        }
+    }
+
+    private void addNewPaper(ResearcherDecorator res) {
+        System.out.print("Enter Title: ");
+        String title = scanner.nextLine();
+        System.out.print("Enter Journal: ");
+        String journal = scanner.nextLine();
+        System.out.print("Enter DOI: ");
+        String doi = scanner.nextLine();
+        System.out.print("Enter Pages: ");
+        int pages = Integer.parseInt(scanner.nextLine());
+
+        List<Researcher> authors = new ArrayList<>();
+        authors.add(res);
+
+        ResearchPaper paper = new ResearchPaper(title, authors, journal, pages, new Date(), doi);
+        res.addPaper(paper);
+        System.out.println("Paper added successfully!");
     }
 
     public void login() {
@@ -174,22 +278,33 @@ public class UniversitySystem {
 
 }
 
-//public void showResearcherMenu() {
-//    System.out.println("Sort by: 1. Citations, 2. Date, 3. Length");
-//    String sortChoice = scanner.nextLine();
+//public void makeUserResearcher() {
+//    System.out.print("Enter user login to make researcher: ");
+//    String login = scanner.nextLine();
 //
-//    Researcher res = (Researcher) currentUser;
-//    Comparator<ResearchPaper> selectedComparator;
+//    // 1. Ищем пользователя в DataStorage
+//    User user = storage.getUsers().stream()
+//            .filter(u -> u.getLogin().equals(login))
+//            .findFirst()
+//            .orElse(null);
 //
-//    // В зависимости от выбора подставляем нужную стратегию
-//    if (sortChoice.equals("1")) {
-//        selectedComparator = new CitationsComparator();
-//    } else if (sortChoice.equals("2")) {
-//        selectedComparator = new DateComparator();
-//    } else {
-//        selectedComparator = new LengthComparator();
+//    if (user == null) {
+//        System.out.println("User not found.");
+//        return;
 //    }
 //
-//    // Передаем ВЫБРАННЫЙ компаратор в метод
-//    res.printPapers(selectedComparator);
+//    // 2. Проверяем, не является ли он уже исследователем
+//    if (user.getResearcherData() != null) {
+//        System.out.println("This user is already a researcher.");
+//        return;
+//    }
+//
+//    // 3. Создаем декоратор и привязываем его к пользователю
+//    ResearcherDecorator decorator = new ResearcherDecorator(user);
+//    user.setResearcherData(decorator);
+//
+//    // 4. Сохраняем изменения в файл
+//    storage.save();
+//
+//    System.out.println(user.getLastName() + " is now a Researcher!");
 //}
