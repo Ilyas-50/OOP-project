@@ -1,9 +1,7 @@
 package Model1;
 
-import java.io.*;
-import java.util.*;
-
 public class NotAResearcherException extends UniversitySystemException {
+    private static final long serialVersionUID = 1L;
 
     public NotAResearcherException() {
         super();
@@ -12,5 +10,4 @@ public class NotAResearcherException extends UniversitySystemException {
     public NotAResearcherException(String message) {
         super(message);
     }
-
 }
