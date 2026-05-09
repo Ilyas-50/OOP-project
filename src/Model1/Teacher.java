@@ -1,10 +1,8 @@
 package Model1;
 
-import java.io.*;
 import java.util.*;
 
 public class Teacher extends Employee {
-
     private TeacherTitle title;
     private List<Course> courses;
     public Lesson instructor;
@@ -15,26 +13,23 @@ public class Teacher extends Employee {
     }
 
     public void viewCourses() {
-        // TODO implement here
+        System.out.println("Instructor's courses:");
+        for (Course c : courses) {
+            System.out.println("- " + c.getCourseName());
+        }
     }
 
     public void putMark(Student student, Course course, Mark mark) {
-        // TODO implement here
+        student.getTranscript().addMark(mark);
+        System.out.println("Mark put for student " + student.getName() + " in " + course.getCourseName());
     }
 
     public void viewStudents() {
-        // TODO implement here
+        System.out.println("Feature to view all students is under development.");
     }
 
-    public TeacherTitle getTitle() {
-        return title;
-    }
+    public TeacherTitle getTitle() { return title; }
+    public void setTitle(TeacherTitle title) { this.title = title; }
 
-    public void setTitle(TeacherTitle title) {
-        this.title = title;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
+    public List<Course> getCourses() { return courses; }
 }
