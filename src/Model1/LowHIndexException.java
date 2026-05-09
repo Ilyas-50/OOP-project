@@ -1,9 +1,7 @@
 package Model1;
 
-import java.io.*;
-import java.util.*;
-
 public class LowHIndexException extends UniversitySystemException {
+    private static final long serialVersionUID = 1L;
 
     public LowHIndexException() {
         super();
@@ -12,5 +10,4 @@ public class LowHIndexException extends UniversitySystemException {
     public LowHIndexException(String message) {
         super(message);
     }
-
 }
