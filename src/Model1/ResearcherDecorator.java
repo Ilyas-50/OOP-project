@@ -21,10 +21,7 @@ public class ResearcherDecorator implements Researcher, Serializable {
     @Override
     public void addPaper(ResearchPaper p) {
         this.papers.add(p);
-        DataStorage.getInstance().getAllPapers().add(p);
-        String logMsg = String.format("Researcher %s added a new paper: '%s'", user.getLastName(), p.getTitle());
-        DataStorage.getInstance().addLog(logMsg);
-        DataStorage.getInstance().save();
+        DataStorage.getInstance().registerNewPaper(p, user.getLastName());
     }
 
     @Override
@@ -41,6 +38,23 @@ public class ResearcherDecorator implements Researcher, Serializable {
         for (ResearchPaper p : sortedPapers) {
             System.out.println(p.getCitationInFormat());
         }
+    }
+
+    public void createProject(String topic) {
+        ResearchProject project = new ResearchProject(topic);
+        try {
+            project.addParticipant(this);
+            DataStorage.getInstance().getAllProjects().add(project);
+            DataStorage.getInstance().addLog("Project created: " + topic + " by " + user.getLastName());
+            DataStorage.getInstance().save();
+        } catch (NotAResearcherException e) {
+            // ошибки по идее не должно быть
+            System.err.println("Critical error: " + e.getMessage());
+        }
+    }
+
+    public List<ResearchProject> getMyProjects() {
+        return DataStorage.getInstance().getProjectsForResearcher(this);
     }
 
     @Override

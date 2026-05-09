@@ -152,15 +152,17 @@ public class UniversitySystem {
                     break;
                 }
             }
-
             if (targetUser == null) {
                 System.out.println("User not found.");
+            }
+            else if (!(targetUser instanceof Student || targetUser instanceof Teacher)) {
+                System.out.println("Error: Only Students and Teachers can become researchers.");
             }
             else if (targetUser.getResearcherData() != null) {
                 System.out.println("User is already a researcher.");
             }
             else {
-                ResearcherDecorator rd = new ResearcherDecorator(targetUser); //decorator
+                ResearcherDecorator rd = new ResearcherDecorator(targetUser);
                 targetUser.setResearcherData(rd);
 
                 String msg = String.format("Admin %s assigned Researcher status to %s", currentUser.getLastName(), targetUser.getLogin());
@@ -191,13 +193,16 @@ public class UniversitySystem {
         }
     }
 
-
     public void showResearcherMenu() {
         ResearcherDecorator res = currentUser.getResearcherData();
         System.out.println("\n--- RESEARCHER MENU ---");
-        System.out.println("1. View Papers");
+        System.out.println("1. View My Papers");
         System.out.println("2. Add Paper");
         System.out.println("3. View H-Index");
+        System.out.println("4. View My Projects");
+        System.out.println("5. Create Research Project");
+        System.out.println("6. Join Research Project");
+        System.out.println("7. Add Paper to Project");
         System.out.println("0. Back");
 
         String choice = scanner.nextLine();
@@ -221,11 +226,40 @@ public class UniversitySystem {
                 }
                 res.printPapers(selectedComparator);
                 break;
+
             case "2":
                 addNewPaper(res);
                 break;
+
             case "3":
                 System.out.println("Your H-Index is: " + res.calculateHIndex());
+                break;
+
+            case "4":
+                List<ResearchProject> myProjects = res.getMyProjects();
+                if (myProjects.isEmpty()) {
+                    System.out.println("You are not a member of any research project.");
+                } else {
+                    System.out.println("--- Your Research Projects ---");
+                    for (int i = 0; i < myProjects.size(); i++) {
+                        System.out.println((i + 1) + ". " + myProjects.get(i));
+                    }
+                }
+                break;
+
+
+            case "5":
+                System.out.print("Enter project topic: ");
+                res.createProject(scanner.nextLine());
+                System.out.println("Project created successfully!");
+                break;
+
+            case "6":
+                joinResearchProject(res);
+                break;
+
+            case "7":
+                addPaperToProject(res);
                 break;
             case "0":
                 return;
@@ -253,6 +287,81 @@ public class UniversitySystem {
         System.out.println("Paper added successfully!");
     }
 
+//    private void createResearchProject(ResearcherDecorator res) {
+//        System.out.print("Enter project topic: ");
+//        String topic = scanner.nextLine();
+//
+//        res.createProject(topic);
+//
+//        System.out.println("Project created successfully!");
+//    }
+
+    private void joinResearchProject(ResearcherDecorator res) {
+        List<ResearchProject> allProjects = storage.getAllProjects();
+        if (allProjects.isEmpty()) {
+            System.out.println("No research projects available.");
+            return;
+        }
+        System.out.println("--- Available Projects ---");
+        for (int i = 0; i < allProjects.size(); i++) {
+            System.out.println((i + 1) + ". " + allProjects.get(i).getTopic());
+        }
+        System.out.print("Enter project number: ");
+        try {
+            int index = Integer.parseInt(scanner.nextLine()) - 1;
+            if (index < 0 || index >= allProjects.size()) {
+                System.out.println("Invalid project number.");
+                return;
+            }
+            allProjects.get(index).addParticipant(res);
+            storage.addLog("Researcher " + res.getUser().getLastName() + " joined: " + allProjects.get(index).getTopic());
+            storage.save();
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        } catch (NotAResearcherException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void addPaperToProject(ResearcherDecorator res) {
+        List<ResearchProject> myProjects = res.getMyProjects();
+        if (myProjects.isEmpty()) {
+            System.out.println("You are not a member of any project.");
+            return;
+        }
+        System.out.println("--- Your Projects ---");
+        for (int i = 0; i < myProjects.size(); i++) {
+            System.out.println((i + 1) + ". " + myProjects.get(i).getTopic());
+        }
+        System.out.print("Select project: ");
+        try {
+            int projIndex = Integer.parseInt(scanner.nextLine()) - 1;
+            if (projIndex < 0 || projIndex >= myProjects.size()) {
+                System.out.println("Invalid number.");
+                return;
+            }
+            List<ResearchPaper> papers = res.getPapers();
+            if (papers.isEmpty()) {
+                System.out.println("You have no papers to add.");
+                return;
+            }
+            System.out.println("--- Your Papers ---");
+            for (int i = 0; i < papers.size(); i++) {
+                System.out.println((i + 1) + ". " + papers.get(i).getTitle());
+            }
+            System.out.print("Select paper: ");
+            int paperIndex = Integer.parseInt(scanner.nextLine()) - 1;
+            if (paperIndex < 0 || paperIndex >= papers.size()) {
+                System.out.println("Invalid number.");
+                return;
+            }
+            myProjects.get(projIndex).addPaper(papers.get(paperIndex));
+            storage.save();
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+    }
+
     public void login() {
         System.out.print("Login: ");
         String login = scanner.nextLine();
@@ -275,6 +384,7 @@ public class UniversitySystem {
         currentUser = null;
         storage.save();
     }
+
 
 }
 
