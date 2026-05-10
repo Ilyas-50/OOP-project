@@ -36,6 +36,7 @@ public class Mark implements java.io.Serializable{
         return "F";
     }
 
+    public Course getCourse(){return course;}
     @Override
     public String toString() {
         return course.getCourseName() + ": " + getLetterDigit() + " (" + totalScore + ")";

@@ -25,12 +25,22 @@ public class Student extends User {
         }
     }
 
-    public void registerToCourse(Course course) {
+    public void registerToCourse(Course course) throws CreditLimitExceededException {
+        if (!course.getPrerequisites().isEmpty()) {
+            Course required = course.getPrerequisites().getFirst(); //один пререк у предмета
+
+            if (!transcript.isCoursePassed(required)) {
+                System.out.println("Registration failed: You must pass " + required.getCourseName() + " first!");
+                return;
+            }
+        }
+
         int MAX_CREDITS = 21;
         if (this.totalCredits + course.getCredits() > MAX_CREDITS) {
-            System.out.println("Error: Credit limit exceeded for " + course.getCourseName());
-            return;
+            throw new CreditLimitExceededException("Credit limit exceeded! Remaining: "
+                    + (MAX_CREDITS - this.totalCredits) + ", required: " + course.getCredits());
         }
+
         this.enrolledCourses.add(course);
         this.totalCredits += course.getCredits();
         System.out.println("Successfully registered to " + course.getCourseName());
@@ -51,4 +61,7 @@ public class Student extends User {
 
     public List<Course> getEnrolledCourses() { return enrolledCourses; }
     public Transcript getTranscript() { return transcript; }
+
+    public int getTotalCredits() { return totalCredits; }
+
 }

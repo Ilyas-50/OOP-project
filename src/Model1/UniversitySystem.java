@@ -479,6 +479,8 @@ public class UniversitySystem {
         }
 
         System.out.println("\n--- Available Courses ---");
+        System.out.println("Your current credits: " + student.getTotalCredits() + " out of 21");
+
         for (int i = 0; i < allCourses.size(); i++) {
             Course c = allCourses.get(i);
             System.out.println((i + 1) + ". " + c.getCourseName() + " (" + c.getCredits() + " credits)");
@@ -499,8 +501,12 @@ public class UniversitySystem {
             } else {
                 System.out.println("Invalid selection.");
             }
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
             System.out.println("Please enter a valid number.");
+        }
+        catch (CreditLimitExceededException e) {
+            System.out.println("Registration failed: " + e.getMessage());
         }
     }
 
