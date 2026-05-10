@@ -5,8 +5,6 @@ import java.util.*;
 
 public class Manager extends Employee {
 
-    private ManagerType managerType;
-
     public Manager() {
         super();
     }
@@ -16,18 +14,14 @@ public class Manager extends Employee {
     }
 
     public void addCourse(Course course) {
-        // TODO implement here
+        DataStorage storage = DataStorage.getInstance();
+        storage.getCourses().add(course);
+        storage.addLog("Manager " + this.getLastName() + " added new course: " + course.getCourseName());
+        storage.save();
+        System.out.println("Course " + course.getCourseName() + " successfully added to the system.");
     }
 
     public void viewRequests() {
         // TODO implement here
-    }
-
-    public ManagerType getManagerType() {
-        return managerType;
-    }
-
-    public void setManagerType(ManagerType managerType) {
-        this.managerType = managerType;
     }
 }

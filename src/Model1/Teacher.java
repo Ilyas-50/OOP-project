@@ -21,7 +21,7 @@ public class Teacher extends Employee {
 
     public void putMark(Student student, Course course, Mark mark) {
         student.getTranscript().addMark(mark);
-        System.out.println("Mark put for student " + student.getName() + " in " + course.getCourseName());
+        System.out.println("Mark put for student " + (student).getLastName() + " in " + course.getCourseName());
     }
 
     public void viewStudents() {

@@ -41,12 +41,16 @@ public class UniversitySystem {
         String status = currentUser.getFullStatus();
 
         String researcherPrefix = (currentUser.getResearcherData() != null) ? "Researcher " : "";
-        System.out.println("Your status: " + researcherPrefix + status);
+        String postfix = (currentUser instanceof Student) ? " (" + ((Student)currentUser).getFaculty() + ", Year " + ((Student)currentUser).getYearOfStudy() + ")" : "";
+        System.out.println("Your status: " + researcherPrefix + status + postfix);
 
         if (currentUser instanceof Admin) {
             showAdminMenu();
         } else if (currentUser instanceof Student) {
             showStudentMenu();
+        }
+        else if (currentUser instanceof Manager) {
+            showManagerMenu();
         }
 
 //        if (currentUser.getResearcherData() != null) {
@@ -177,19 +181,45 @@ public class UniversitySystem {
     }
 
     public void showStudentMenu() {
-        System.out.println("1. View Courses\n2. View Marks\n0. Logout");
+        Student student = (Student) currentUser;
 
-        if (currentUser.getResearcherData() != null) {
+        System.out.println("1. View My Courses");
+        System.out.println("2. View Transcript (Marks)");
+        System.out.println("3. Register for a Course");
+        System.out.println("0. Logout");
+
+        if (student.getResearcherData() != null) {
             System.out.println("R. Researcher Panel");
         }
+
         String choice = scanner.nextLine();
 
-        if (choice.equals("1")) {
-            // courses need to add
-        } else if (choice.equalsIgnoreCase("R") && currentUser.getResearcherData() != null) {
-            showResearcherMenu();
-        } else if (choice.equals("0")) {
-            logout();
+        switch (choice) {
+            case "1":
+                student.viewCourses();
+                break;
+
+            case "2":
+                student.viewTranscript();
+                break;
+
+            case "3":
+                registerStudentToCourse(student);
+                break;
+
+            case "R":
+            case "r":
+                if (student.getResearcherData() != null) {
+                    showResearcherMenu();
+                }
+                break;
+
+            case "0":
+                logout();
+                return;
+
+            default:
+                System.out.println("Invalid option.");
         }
     }
 
@@ -257,7 +287,6 @@ public class UniversitySystem {
             case "6":
                 joinResearchProject(res);
                 break;
-
             case "7":
                 addPaperToProject(res);
                 break;
@@ -266,6 +295,86 @@ public class UniversitySystem {
             default:
                 System.out.println("Invalid option.");
                 break;
+        }
+    }
+
+    public void showManagerMenu() {
+        Manager manager = (Manager) currentUser;
+        System.out.println("\n--- MANAGER MENU ---");
+        System.out.println("1. Add Course to System");
+        System.out.println("2. View All Courses");
+        System.out.println("0. Logout");
+
+        String choice = scanner.nextLine();
+
+        if (choice.equals("1")) {
+            System.out.print("Enter Course Code (CS101): ");
+            String code = scanner.nextLine();
+            System.out.print("Enter Course Name: ");
+            String name = scanner.nextLine();
+            System.out.print("Enter Credits: ");
+            int credits = Integer.parseInt(scanner.nextLine());
+
+            Course newCourse = new Course(code, name, credits);
+
+            System.out.print("Does it have prerequisites? (y/n): ");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                addPrerequisiteToCourse(newCourse);
+            }
+
+            manager.addCourse(newCourse);
+        }
+        else if (choice.equals("2")) {
+            System.out.println("Courses:");
+            List<Course> allCourses = storage.getCourses();
+
+            if (allCourses.isEmpty()) {
+                System.out.println("No courses registered yet.");
+            } else {
+                for (Course c : allCourses) {
+                    System.out.println(c.getCourseName() + "(" + c.getCourseCode() + ") : " + c.getCredits() + " credits");
+                }
+            }
+        }
+        else if (choice.equals("0")) {
+            logout();
+        }
+    }
+
+    private void addPrerequisiteToCourse(Course newCourse) {
+        List<Course> available = storage.getCourses();
+
+        if (available.isEmpty()) {
+            System.out.println("No existing courses to set as a prerequisite.");
+            return;
+        }
+
+        System.out.println("\n--- Select one Prerequisite ---");
+        for (int i = 0; i < available.size(); i++) {
+            System.out.println((i + 1) + ". " + available.get(i));
+        }
+        System.out.println("0. No prerequisite");
+
+        System.out.print("Enter choice: ");
+        try {
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            if (choice > 0 && choice <= available.size()) {
+                Course selected = available.get(choice - 1);
+
+                if (selected.getCourseName().equals(newCourse.getCourseName())) {
+                    System.out.println("A course cannot be its own prerequisite.");
+                } else {
+                    newCourse.addPrerequisite(selected);
+                    System.out.println("Prerequisite set: " + selected.getCourseName());
+                }
+            } else if (choice == 0) {
+                System.out.println("No prerequisite assigned.");
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid number.");
         }
     }
 
@@ -359,6 +468,39 @@ public class UniversitySystem {
             storage.save();
         } catch (NumberFormatException e) {
             System.out.println("Invalid input.");
+        }
+    }
+
+    private void registerStudentToCourse(Student student) {
+        List<Course> allCourses = storage.getCourses();
+        if (allCourses.isEmpty()) {
+            System.out.println("No courses available in the system.");
+            return;
+        }
+
+        System.out.println("\n--- Available Courses ---");
+        for (int i = 0; i < allCourses.size(); i++) {
+            Course c = allCourses.get(i);
+            System.out.println((i + 1) + ". " + c.getCourseName() + " (" + c.getCredits() + " credits)");
+        }
+
+        System.out.print("Select course number to register: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine()) - 1;
+            if (idx >= 0 && idx < allCourses.size()) {
+                Course selected = allCourses.get(idx);
+
+                if (student.getEnrolledCourses().contains(selected)) {
+                    System.out.println("You are already registered for this course.");
+                } else {
+                    student.registerToCourse(selected);
+                    storage.save();
+                }
+            } else {
+                System.out.println("Invalid selection.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid number.");
         }
     }
 

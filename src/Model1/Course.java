@@ -2,7 +2,7 @@ package Model1;
 
 import java.util.*;
 
-public class Course {
+public class Course implements java.io.Serializable{
     private String courseCode;
     private String courseName;
     private int credits;
@@ -23,6 +23,7 @@ public class Course {
         return prerequisites;
     }
 
+    public String getCourseCode() { return courseCode; }
     public String getCourseName() { return courseName; }
     public int getCredits() { return credits; }
     

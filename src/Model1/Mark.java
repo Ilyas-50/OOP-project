@@ -1,6 +1,6 @@
 package Model1;
 
-public class Mark {
+public class Mark implements java.io.Serializable{
     private double firstAttestation;
     private double secondAttestation;
     private double finalExam;

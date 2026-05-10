@@ -18,8 +18,17 @@ public class Main {
             root.setPassword("admin");
 
             storage.getUsers().add(root);
-            storage.save();
+//            storage.save();
             System.out.println("Created initial admin: admin/admin");
+
+            Manager manager = new Manager();
+            manager.setFirstName("Manager");
+            manager.setLogin("man");
+            manager.setPassword("man");
+
+            storage.getUsers().add(manager);
+            storage.save();
+            System.out.println("Created initial manager: man/man");
         }
 
         UniversitySystem system = new UniversitySystem();

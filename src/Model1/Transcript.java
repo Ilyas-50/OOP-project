@@ -2,7 +2,7 @@ package Model1;
 
 import java.util.*;
 
-public class Transcript {
+public class Transcript implements java.io.Serializable{
     private List<Mark> marks;
 
     public Transcript() {
