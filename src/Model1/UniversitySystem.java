@@ -52,11 +52,10 @@ public class UniversitySystem {
         else if (currentUser instanceof Manager) {
             showManagerMenu();
         }
+        else if (currentUser instanceof Teacher) {
+            showTeacherMenu();
+        }
 
-//        if (currentUser.getResearcherData() != null) {
-//            System.out.println("R. Researcher Menu");
-            // Добавим обработку в конкретные меню или вынесем отдельно
-//        }
     }
 
     public void showAdminMenu() {
@@ -185,7 +184,7 @@ public class UniversitySystem {
 
         System.out.println("1. View My Courses");
         System.out.println("2. View Transcript (Marks)");
-        System.out.println("3. Register for a Course");
+        System.out.println("3. Register to a Course");
         System.out.println("0. Logout");
 
         if (student.getResearcherData() != null) {
@@ -303,6 +302,7 @@ public class UniversitySystem {
         System.out.println("\n--- MANAGER MENU ---");
         System.out.println("1. Add Course to System");
         System.out.println("2. View All Courses");
+        System.out.println("3. Assign Course to Teacher");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -336,8 +336,176 @@ public class UniversitySystem {
                 }
             }
         }
+        else if (choice.equals("3")) {
+            assignCourseLogic(manager);
+        }
         else if (choice.equals("0")) {
             logout();
+        }
+    }
+
+    public void showTeacherMenu() {
+        Teacher teacher = (Teacher) currentUser;
+        System.out.println("\n--- TEACHER MENU ---");
+        System.out.println("1. View My Courses");
+        System.out.println("2. Put Marks");
+        System.out.println("0. Logout");
+
+        if (teacher.getResearcherData() != null) {
+            System.out.println("R. Researcher Panel");
+        }
+
+        String choice = scanner.nextLine();
+
+        switch (choice) {
+            case "1":
+                viewTeacherCourses(teacher);
+                break;
+            case "2":
+                manageMarks(teacher);
+                break;
+            case "R":
+            case "r":
+                if (teacher.getResearcherData() != null) showResearcherMenu();
+                break;
+            case "0":
+                logout();
+                break;
+            default:
+                System.out.println("Invalid option.");
+        }
+    }
+
+    private void assignCourseLogic(Manager manager) {
+        List<Course> allCourses = storage.getCourses();
+        if (allCourses.isEmpty()) {
+            System.out.println("No courses in system. Create a course first.");
+            return;
+        }
+
+        // 1. Выбираем курс
+        for (int i = 0; i < allCourses.size(); i++) {
+            System.out.println((i + 1) + ". " + allCourses.get(i));
+        }
+        System.out.print("Select course number: ");
+        int cIdx = Integer.parseInt(scanner.nextLine()) - 1;
+        Course selectedCourse = allCourses.get(cIdx);
+
+        // 2. Выводим список учителей для справки
+        System.out.println("\n--- Available Teachers ---");
+        for (User u : storage.getUsers()) {
+            if (u instanceof Teacher) {
+                System.out.println("- " + u.getLastName() + " (Login: " + u.getLogin() + ")");
+            }
+        }
+
+        // 3. Ищем учителя по логину
+        System.out.print("Enter teacher's login: ");
+        String login = scanner.nextLine();
+
+        Teacher targetTeacher = null;
+        for (User u : storage.getUsers()) {
+            if (u instanceof Teacher && u.getLogin().equals(login)) {
+                targetTeacher = (Teacher) u;
+                break;
+            }
+        }
+
+        if (targetTeacher != null) {
+            manager.assignCourseToTeacher(targetTeacher, selectedCourse);
+            System.out.println("Course successfully assigned to " + targetTeacher.getLastName());
+        } else {
+            System.out.println("Teacher not found.");
+        }
+    }
+
+    private void viewTeacherCourses(Teacher teacher) {
+        System.out.println("\nYour Courses: ");
+        // Предполагаем, что у учителя есть метод getCourses()
+        if (teacher.getCourses().isEmpty()) {
+            System.out.println("You are not assigned to any courses.");
+        } else {
+            teacher.getCourses().forEach(c -> System.out.println("- " + c.getCourseName()));
+        }
+    }
+
+    private void manageMarks(Teacher teacher) {
+        List<Course> myCourses = teacher.getCourses();
+        if (myCourses == null || myCourses.isEmpty()) {
+            System.out.println("You have no courses to manage");
+            return;
+        }
+
+        System.out.println("\nSelect Course: ");
+        for (int i = 0; i < myCourses.size(); i++) {
+            System.out.println((i + 1) + ". " + myCourses.get(i).getCourseName());
+        }
+
+        int courseIdx;
+        try {
+            System.out.print("Enter number: ");
+            courseIdx = Integer.parseInt(scanner.nextLine()) - 1;
+            if (courseIdx < 0 || courseIdx >= myCourses.size()) {
+                System.out.println("Invalid selection");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a number");
+            return;
+        }
+        Course selectedCourse = myCourses.get(courseIdx);
+
+        System.out.println("\nStudents enrolled in " + selectedCourse.getCourseName() + ":");
+        boolean hasStudents = false;
+        for (User u : storage.getUsers()) {
+            if (u instanceof Student) {
+                Student s = (Student) u;
+                if (s.getEnrolledCourses().contains(selectedCourse)) {
+                    System.out.println("- " + s.getLastName() + " (Login: " + s.getLogin() + ")");
+                    hasStudents = true;
+                }
+            }
+        }
+
+        if (!hasStudents) {
+            System.out.println("No students found for this course");
+            return;
+        }
+
+        System.out.print("\nEnter student login to put mark: ");
+        String login = scanner.nextLine();
+
+        Student selectedStudent = null;
+        for (User u : storage.getUsers()) {
+            if (u instanceof Student && u.getLogin().equals(login)) {
+                Student s = (Student) u;
+                if (s.getEnrolledCourses().contains(selectedCourse)) {
+                    selectedStudent = s;
+                    break;
+                }
+            }
+        }
+
+        if (selectedStudent == null) {
+            System.out.println("Student with login '" + login + "' not found on this course");
+            return;
+        }
+
+        try {
+            System.out.print("Enter total score for " + selectedStudent.getLastName() + " (0-100): ");
+            double score = Double.parseDouble(scanner.nextLine());
+
+            if (score < 0 || score > 100) {
+                System.out.println("Score must be between 0 and 100");
+                return;
+            }
+
+            teacher.putMark(selectedStudent, selectedCourse, score);
+            storage.save();
+
+            System.out.println("Mark (" + score + ") successfully added to " + selectedStudent.getLastName() + "'s transcript.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid score format. Use numbers (e.g. 85.5)");
         }
     }
 

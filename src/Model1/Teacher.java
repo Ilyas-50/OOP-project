@@ -4,12 +4,10 @@ import java.util.*;
 
 public class Teacher extends Employee {
     private TeacherTitle title;
-    private List<Course> courses;
-    public Lesson instructor;
+    private List<Course> courses = new ArrayList<>();;
 
     public Teacher() {
         super();
-        this.courses = new ArrayList<>();
     }
 
     public void viewCourses() {
@@ -19,9 +17,12 @@ public class Teacher extends Employee {
         }
     }
 
-    public void putMark(Student student, Course course, Mark mark) {
+    public void putMark(Student student, Course course, double score) {
+        Mark mark = new Mark(course, score);
         student.getTranscript().addMark(mark);
-        System.out.println("Mark put for student " + (student).getLastName() + " in " + course.getCourseName());
+
+        DataStorage.getInstance().addLog("Teacher " + this.getLastName() +
+                " put mark " + score + " to student " + student.getLastName() + " for " + course.getCourseName());
     }
 
     public void viewStudents() {
@@ -32,4 +33,7 @@ public class Teacher extends Employee {
     public void setTitle(TeacherTitle title) { this.title = title; }
 
     public List<Course> getCourses() { return courses; }
+    public void addCourse(Course course) {
+        this.courses.add(course);
+    }
 }

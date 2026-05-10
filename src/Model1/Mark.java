@@ -1,25 +1,12 @@
 package Model1;
 
-public class Mark implements java.io.Serializable{
-    private double firstAttestation;
-    private double secondAttestation;
-    private double finalExam;
+public class Mark implements java.io.Serializable {
     private double totalScore;
     private Course course;
 
-    public Mark() {}
-
-    public Mark(double firstAtt, double secondAtt, double finalExam, Course course) {
-        this.firstAttestation = firstAtt;
-        this.secondAttestation = secondAtt;
-        this.finalExam = finalExam;
+    public Mark(Course course, double totalScore) {
         this.course = course;
-        this.totalScore = calculateTotal();
-    }
-
-    public double calculateTotal() {
-        this.totalScore = firstAttestation + secondAttestation + finalExam;
-        return totalScore;
+        this.totalScore = totalScore;
     }
 
     public String getLetterDigit() {
@@ -36,9 +23,12 @@ public class Mark implements java.io.Serializable{
         return "F";
     }
 
-    public Course getCourse(){return course;}
+    public Course getCourse() { return course; }
+    public double getTotalScore() { return totalScore; }
+
     @Override
     public String toString() {
-        return course.getCourseName() + ": " + getLetterDigit() + " (" + totalScore + ")";
+        return String.format("%-20s | %-3s | %.1f",
+                course.getCourseName(), getLetterDigit(), totalScore);
     }
 }

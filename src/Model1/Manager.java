@@ -21,6 +21,14 @@ public class Manager extends Employee {
         System.out.println("Course " + course.getCourseName() + " successfully added to the system.");
     }
 
+    public void assignCourseToTeacher(Teacher teacher, Course course) {
+        if (!teacher.getCourses().contains(course)) {
+            teacher.addCourse(course);
+            DataStorage.getInstance().addLog("Manager " + this.getLastName() + " assigned course " + course.getCourseName() + " to teacher " + teacher.getLastName());
+            DataStorage.getInstance().save();
+        }
+    }
+
     public void viewRequests() {
         // TODO implement here
     }
