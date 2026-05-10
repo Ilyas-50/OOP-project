@@ -480,11 +480,11 @@ public class UniversitySystem {
     private void manageMarks(Teacher teacher) {
         List<Course> myCourses = teacher.getCourses();
         if (myCourses == null || myCourses.isEmpty()) {
-            System.out.println("You have no courses to manage");
+            System.out.println("You have no courses to manage.");
             return;
         }
 
-        System.out.println("\nSelect Course: ");
+        System.out.println("\nSelect Course:");
         for (int i = 0; i < myCourses.size(); i++) {
             System.out.println((i + 1) + ". " + myCourses.get(i).getCourseName());
         }
@@ -494,11 +494,11 @@ public class UniversitySystem {
             System.out.print("Enter number: ");
             courseIdx = Integer.parseInt(scanner.nextLine()) - 1;
             if (courseIdx < 0 || courseIdx >= myCourses.size()) {
-                System.out.println("Invalid selection");
+                System.out.println("Invalid selection.");
                 return;
             }
         } catch (NumberFormatException e) {
-            System.out.println("Please enter a number");
+            System.out.println("Please enter a number.");
             return;
         }
         Course selectedCourse = myCourses.get(courseIdx);
@@ -516,7 +516,7 @@ public class UniversitySystem {
         }
 
         if (!hasStudents) {
-            System.out.println("No students found for this course");
+            System.out.println("No students found for this course.");
             return;
         }
 
@@ -535,25 +535,33 @@ public class UniversitySystem {
         }
 
         if (selectedStudent == null) {
-            System.out.println("Student with login '" + login + "' not found on this course");
+            System.out.println("Student '" + login + "' not found on this course.");
             return;
         }
 
         try {
-            System.out.print("Enter total score for " + selectedStudent.getLastName() + " (0-100): ");
-            double score = Double.parseDouble(scanner.nextLine());
+            System.out.print("Enter 1st Attestation score (0-30): ");
+            double att1 = Double.parseDouble(scanner.nextLine());
 
-            if (score < 0 || score > 100) {
-                System.out.println("Score must be between 0 and 100");
+            System.out.print("Enter 2nd Attestation score (0-30): ");
+            double att2 = Double.parseDouble(scanner.nextLine());
+
+            System.out.print("Enter Final Exam score (0-40): ");
+            double finalExam = Double.parseDouble(scanner.nextLine());
+
+            if (att1 < 0 || att2 < 0 || att1 + att2 > 60 || finalExam < 0 || finalExam > 40) {
+                System.out.println("Invalid scores. ATT1 + ATT2 must be <= 60, Final: 0-40.");
                 return;
             }
 
-            teacher.putMark(selectedStudent, selectedCourse, score);
+            teacher.putMark(selectedStudent, selectedCourse, att1, att2, finalExam);
             storage.save();
 
-            System.out.println("Mark (" + score + ") successfully added to " + selectedStudent.getLastName() + "'s transcript.");
+            double total = att1 + att2 + finalExam;
+            System.out.println("Mark added successfully! Total: " + total + " (" + new Mark(selectedCourse, att1, att2, finalExam).getLetterDigit() + ")");
+
         } catch (NumberFormatException e) {
-            System.out.println("Invalid score format. Use numbers (e.g. 85.5)");
+            System.out.println("Invalid format. Use numbers (e.g. 25.5).");
         }
     }
 

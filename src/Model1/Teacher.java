@@ -17,12 +17,12 @@ public class Teacher extends Employee {
         }
     }
 
-    public void putMark(Student student, Course course, double score) {
-        Mark mark = new Mark(course, score);
+    public void putMark(Student student, Course course, double att1, double att2, double finalExam) {
+        Mark mark = new Mark(course, att1, att2, finalExam);
         student.getTranscript().addMark(mark);
 
         DataStorage.getInstance().addLog("Teacher " + this.getLastName() +
-                " put mark " + score + " to student " + student.getLastName() + " for " + course.getCourseName());
+                " put mark " + mark.getTotalScore() + " to " + student.getLastName() + " for " + course.getCourseName());
     }
 
     public void viewStudents() {

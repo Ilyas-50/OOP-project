@@ -3,6 +3,7 @@ package Model1;
 import java.io.*;
 import java.util.*;
 
+
 public class DataStorage implements java.io.Serializable {
 
     private static DataStorage instance;
@@ -12,6 +13,8 @@ public class DataStorage implements java.io.Serializable {
     private List<String> systemLogs;
     private int userCounter = 0;
     private List<ResearchProject> allProjects;
+
+    private static final String FILE_PATH = System.getProperty("user.dir") + File.separator + "storage.dat";
 
     // Singleton
     private DataStorage() {
@@ -32,7 +35,7 @@ public class DataStorage implements java.io.Serializable {
 
     //Serialization
     public void save() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("storage.dat"))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
             oos.writeObject(instance);
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,7 +44,7 @@ public class DataStorage implements java.io.Serializable {
 
     //Deserialization
     public void load() {
-        File file = new File("storage.dat");
+        File file = new File(FILE_PATH);
         if (!file.exists()) return;
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
