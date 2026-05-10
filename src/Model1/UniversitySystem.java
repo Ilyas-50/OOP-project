@@ -349,6 +349,7 @@ public class UniversitySystem {
         System.out.println("\n--- TEACHER MENU ---");
         System.out.println("1. View My Courses");
         System.out.println("2. Put Marks");
+        System.out.println("3. View Students Info");
         System.out.println("0. Logout");
 
         if (teacher.getResearcherData() != null) {
@@ -364,6 +365,9 @@ public class UniversitySystem {
             case "2":
                 manageMarks(teacher);
                 break;
+            case "3":
+                viewCourseStudents(teacher);
+                break;
             case "R":
             case "r":
                 if (teacher.getResearcherData() != null) showResearcherMenu();
@@ -376,6 +380,54 @@ public class UniversitySystem {
         }
     }
 
+    private void viewCourseStudents(Teacher teacher) {
+        List<Course> myCourses = teacher.getCourses();
+        if (myCourses == null || myCourses.isEmpty()) {
+            System.out.println("You don't have any assigned courses.");
+            return;
+        }
+
+        System.out.println("\n--- Select Course to view Active Students ---");
+        for (int i = 0; i < myCourses.size(); i++) {
+            System.out.println((i + 1) + ". " + myCourses.get(i).getCourseName());
+        }
+
+        System.out.print("Enter number: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine()) - 1;
+            if (idx < 0 || idx >= myCourses.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+            Course selectedCourse = myCourses.get(idx);
+
+            System.out.println("\n--- Active Students on " + selectedCourse.getCourseName() + " ---");
+            boolean found = false;
+
+            for (User u : storage.getUsers()) {
+                if (u instanceof Student) {
+                    Student s = (Student) u;
+                    boolean isEnrolled = s.getEnrolledCourses().contains(selectedCourse);
+                    boolean isFinished = s.getTranscript().isCoursePassed(selectedCourse);
+
+                    if (isEnrolled && !isFinished) {
+                        System.out.println("- " + s.getFirstName() + " " + s.getLastName()
+                                + " | GPA: " + s.getGpa()
+                                + " | Year: " + s.getYearOfStudy());
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found) {
+                System.out.println("No active students found for this course.");
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid number.");
+        }
+    }
+
     private void assignCourseLogic(Manager manager) {
         List<Course> allCourses = storage.getCourses();
         if (allCourses.isEmpty()) {
@@ -383,7 +435,6 @@ public class UniversitySystem {
             return;
         }
 
-        // 1. Выбираем курс
         for (int i = 0; i < allCourses.size(); i++) {
             System.out.println((i + 1) + ". " + allCourses.get(i));
         }
@@ -391,7 +442,6 @@ public class UniversitySystem {
         int cIdx = Integer.parseInt(scanner.nextLine()) - 1;
         Course selectedCourse = allCourses.get(cIdx);
 
-        // 2. Выводим список учителей для справки
         System.out.println("\n--- Available Teachers ---");
         for (User u : storage.getUsers()) {
             if (u instanceof Teacher) {
@@ -399,7 +449,6 @@ public class UniversitySystem {
             }
         }
 
-        // 3. Ищем учителя по логину
         System.out.print("Enter teacher's login: ");
         String login = scanner.nextLine();
 
@@ -421,7 +470,6 @@ public class UniversitySystem {
 
     private void viewTeacherCourses(Teacher teacher) {
         System.out.println("\nYour Courses: ");
-        // Предполагаем, что у учителя есть метод getCourses()
         if (teacher.getCourses().isEmpty()) {
             System.out.println("You are not assigned to any courses.");
         } else {
@@ -647,7 +695,7 @@ public class UniversitySystem {
         }
 
         System.out.println("\n--- Available Courses ---");
-        System.out.println("Your current credits: " + student.getTotalCredits() + " out of 21");
+        System.out.println("Your current credits: " + student.getTotalCredits() + " / 21");
 
         for (int i = 0; i < allCourses.size(); i++) {
             Course c = allCourses.get(i);
@@ -657,23 +705,55 @@ public class UniversitySystem {
         System.out.print("Select course number to register: ");
         try {
             int idx = Integer.parseInt(scanner.nextLine()) - 1;
-            if (idx >= 0 && idx < allCourses.size()) {
-                Course selected = allCourses.get(idx);
-
-                if (student.getEnrolledCourses().contains(selected)) {
-                    System.out.println("You are already registered for this course.");
-                } else {
-                    student.registerToCourse(selected);
-                    storage.save();
-                }
-            } else {
+            if (idx < 0 || idx >= allCourses.size()) {
                 System.out.println("Invalid selection.");
+                return;
             }
-        }
-        catch (NumberFormatException e) {
+
+            Course selected = allCourses.get(idx);
+
+            if (student.getEnrolledCourses().contains(selected)) {
+                System.out.println("You are already registered for this course.");
+                return;
+            }
+
+            List<Teacher> availableTeachers = new ArrayList<>();
+            for (User u : storage.getUsers()) {
+                if (u instanceof Teacher) {
+                    Teacher t = (Teacher) u;
+                    if (t.getCourses().contains(selected)) {
+                        availableTeachers.add(t);
+                    }
+                }
+            }
+
+            if (availableTeachers.isEmpty()) {
+                System.out.println("Sorry, no teachers are currently assigned to this course.");
+                return;
+            }
+
+            System.out.println("\nAvailable teachers for " + selected.getCourseName() + ":");
+            for (int i = 0; i < availableTeachers.size(); i++) {
+                System.out.println((i + 1) + ". " + availableTeachers.get(i).getLastName());
+            }
+
+            System.out.print("Select your teacher: ");
+            int tIdx = Integer.parseInt(scanner.nextLine()) - 1;
+
+            if (tIdx >= 0 && tIdx < availableTeachers.size()) {
+                Teacher chosenTeacher = availableTeachers.get(tIdx);
+
+                student.registerToCourse(selected);
+
+                System.out.println("Registered to " + selected.getCourseName() + " with instructor " + chosenTeacher.getLastName());
+
+                storage.save();
+            } else {
+                System.out.println("Invalid teacher selection.");
+            }
+        } catch (NumberFormatException e) {
             System.out.println("Please enter a valid number.");
-        }
-        catch (CreditLimitExceededException e) {
+        } catch (CreditLimitExceededException e) {
             System.out.println("Registration failed: " + e.getMessage());
         }
     }

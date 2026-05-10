@@ -23,12 +23,21 @@ public class Main {
 
             Manager manager = new Manager();
             manager.setFirstName("Manager");
-            manager.setLogin("man");
-            manager.setPassword("man");
+            manager.setLogin("m");
+            manager.setPassword("m");
 
             storage.getUsers().add(manager);
+//            storage.save();
+            System.out.println("Created initial manager: m/m");
+
+            Teacher teacher = new Teacher();
+            teacher.setFirstName("Teacher");
+            teacher.setLogin("t");
+            teacher.setPassword("t");
+
+            storage.getUsers().add(teacher);
             storage.save();
-            System.out.println("Created initial manager: man/man");
+            System.out.println("Created initial teacher: t/t");
         }
 
         UniversitySystem system = new UniversitySystem();

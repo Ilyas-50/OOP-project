@@ -26,7 +26,20 @@ public class Course implements java.io.Serializable{
     public String getCourseCode() { return courseCode; }
     public String getCourseName() { return courseName; }
     public int getCredits() { return credits; }
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Course)) return false;
+        Course c = (Course) o;
+        return courseCode.equals(c.courseCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return courseCode.hashCode();
+    }
+
     @Override
     public String toString() { return courseName + " (" + courseCode + ")"; }
 }

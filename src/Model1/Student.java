@@ -43,7 +43,7 @@ public class Student extends User {
 
         this.enrolledCourses.add(course);
         this.totalCredits += course.getCredits();
-        System.out.println("Successfully registered to " + course.getCourseName());
+//        System.out.println("Successfully registered to " + course.getCourseName());
     }
 
     public void viewTranscript() {
