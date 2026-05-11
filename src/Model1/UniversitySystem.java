@@ -185,6 +185,7 @@ public class UniversitySystem {
         System.out.println("1. View My Courses");
         System.out.println("2. View Transcript (Marks)");
         System.out.println("3. Register to a Course");
+        System.out.println("4. Rate a Teacher");
         System.out.println("0. Logout");
 
         if (student.getResearcherData() != null) {
@@ -204,6 +205,10 @@ public class UniversitySystem {
 
             case "3":
                 registerStudentToCourse(student);
+                break;
+
+            case "4":
+                rateTeacher(student);
                 break;
 
             case "R":
@@ -303,6 +308,7 @@ public class UniversitySystem {
         System.out.println("1. Add Course to System");
         System.out.println("2. View All Courses");
         System.out.println("3. Assign Course to Teacher");
+        System.out.println("4. View Teacher Ratings");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -338,6 +344,21 @@ public class UniversitySystem {
         }
         else if (choice.equals("3")) {
             assignCourseLogic(manager);
+        }
+        else if (choice.equals("4")) {
+            System.out.println("\n--- Teacher Ratings ---");
+            boolean found = false;
+            for (User u : storage.getUsers()) {
+                if (u instanceof Teacher) {
+                    Teacher t = (Teacher) u;
+                    found = true;
+                    System.out.printf("%-20s | Rating: %.1f/10 (%d votes)%n",
+                            t.getFirstName() + " " + t.getLastName(),
+                            t.getAverageRating(),
+                            t.getRatings().size());
+                }
+            }
+            if (!found) System.out.println("No teachers found.");
         }
         else if (choice.equals("0")) {
             logout();
@@ -377,6 +398,55 @@ public class UniversitySystem {
                 break;
             default:
                 System.out.println("Invalid option.");
+        }
+    }
+
+    private void rateTeacher(Student student) {
+        List<Teacher> rateableTeachers = new ArrayList<>();
+
+        for (User u : storage.getUsers()) {
+            if (u instanceof Teacher) {
+                Teacher t = (Teacher) u;
+                for (Course c : t.getCourses()) {
+                    if (student.getTranscript().isCoursePassed(c) && !rateableTeachers.contains(t)) {
+                        rateableTeachers.add(t);
+                    }
+                }
+            }
+        }
+
+        if (rateableTeachers.isEmpty()) {
+            System.out.println("You have no completed courses to rate teachers.");
+            return;
+        }
+
+        System.out.println("\n--- Rate a Teacher ---");
+        for (int i = 0; i < rateableTeachers.size(); i++) {
+            Teacher t = rateableTeachers.get(i);
+            System.out.println((i + 1) + ". " + t.getFirstName() + " " + t.getLastName()
+                    + " | Current rating: " + String.format("%.1f", t.getAverageRating()));
+        }
+
+        System.out.print("Select teacher: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine()) - 1;
+            if (idx < 0 || idx >= rateableTeachers.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+            Teacher selected = rateableTeachers.get(idx);
+
+            System.out.print("Enter rating (0-10): ");
+            int rating = Integer.parseInt(scanner.nextLine());
+
+            selected.addRating(rating);
+            storage.addLog("Student " + student.getLastName() + " rated teacher "
+                    + selected.getLastName() + ": " + rating);
+            storage.save();
+            System.out.println("Rating submitted!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
         }
     }
 

@@ -9,9 +9,6 @@ public class Manager extends Employee {
         super();
     }
 
-    public void approveRegistration() {
-        // TODO implement here
-    }
 
     public void addCourse(Course course) {
         DataStorage storage = DataStorage.getInstance();
@@ -29,7 +26,4 @@ public class Manager extends Employee {
         }
     }
 
-    public void viewRequests() {
-        // TODO implement here
-    }
 }
