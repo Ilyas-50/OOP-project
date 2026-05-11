@@ -243,6 +243,7 @@ public class UniversitySystem {
         System.out.println("5. Create Research Project");
         System.out.println("6. Join Research Project");
         System.out.println("7. Add Paper to Project");
+        System.out.println("8. Cite a Paper(цитирование)");
         System.out.println("0. Back");
 
         String choice = scanner.nextLine();
@@ -300,6 +301,9 @@ public class UniversitySystem {
             case "7":
                 addPaperToProject(res);
                 break;
+            case "8":
+                citePaper(res);
+                break;
             case "0":
                 return;
             default:
@@ -320,9 +324,10 @@ public class UniversitySystem {
 
     private void showORManagerMenu(Manager manager) {
         System.out.println("\n--- MANAGER MENU (Office of Registrar) ---");
-        System.out.println("1. View All Students (sorted)");
-        System.out.println("2. Statistical Report");
-        System.out.println("3. View Teacher Ratings");
+        System.out.println("1. View All Students");
+        System.out.println("2. View All Teachers");
+        System.out.println("3. Statistical Report");
+        System.out.println("4. View Teacher Ratings");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -350,16 +355,40 @@ public class UniversitySystem {
             }
         }
         else if (choice.equals("2")) {
-            manager.printStatisticalReport();
+            System.out.println("Sort by: 1. Rating | 2. Alphabetically");
+            String sort = scanner.nextLine();
+
+            List<Teacher> teachers = new ArrayList<>();
+            for (User u : storage.getUsers()) {
+                if (u instanceof Teacher) teachers.add((Teacher) u);
+            }
+
+            if (sort.equals("1")) {
+                teachers.sort((a, b) -> Double.compare(b.getAverageRating(), a.getAverageRating()));
+            } else {
+                teachers.sort(Comparator.comparing(User::getLastName));
+            }
+
+            System.out.println("\n--- Teachers ---");
+            for (Teacher t : teachers) {
+                System.out.printf("%-20s | Title: %-15s | Rating: %.1f/10%n",
+                        t.getFirstName() + " " + t.getLastName(),
+                        t.getTitle(), t.getAverageRating());
+            }
         }
         else if (choice.equals("3")) {
+            manager.printStatisticalReport();
+        }
+        else if (choice.equals("4")) {
             System.out.println("\n--- Teacher Ratings ---");
             boolean found = false;
             for (User u : storage.getUsers()) {
                 if (u instanceof Teacher) {
                     Teacher t = (Teacher) u;
                     found = true;
-                    System.out.printf("%-20s | Rating: %.1f/10 (%d votes)%n", t.getFirstName() + " " + t.getLastName(), t.getAverageRating(), t.getRatings().size());
+                    System.out.printf("%-20s | Rating: %.1f/10 (%d votes)%n",
+                            t.getFirstName() + " " + t.getLastName(),
+                            t.getAverageRating(), t.getRatings().size());
                 }
             }
             if (!found) System.out.println("No teachers found.");
@@ -446,6 +475,42 @@ public class UniversitySystem {
                 break;
             default:
                 System.out.println("Invalid option.");
+        }
+    }
+
+    private void citePaper(ResearcherDecorator res) {
+        List<ResearchPaper> allPapers = storage.getAllPapers();
+        if (allPapers.isEmpty()) {
+            System.out.println("No papers in the system to cite.");
+            return;
+        }
+
+        System.out.println("\n--- All Papers in System ---");
+        for (int i = 0; i < allPapers.size(); i++) {
+            System.out.println((i + 1) + ". " + allPapers.get(i).getTitle()
+                    + " | Citations: " + allPapers.get(i).getCitations());
+        }
+
+        System.out.print("Select paper to cite: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine()) - 1;
+            if (idx < 0 || idx >= allPapers.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+            ResearchPaper selected = allPapers.get(idx);
+            if (selected.getAuthors().contains(res)) {
+                System.out.println("You cannot cite your own paper.");
+                return;
+            }
+            selected.addCitation();
+            storage.addLog("Researcher " + res.getUser().getLastName()
+                    + " cited paper: " + selected.getTitle());
+            storage.save();
+            System.out.println("Cited! Total citations: " + selected.getCitations());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
         }
     }
 
