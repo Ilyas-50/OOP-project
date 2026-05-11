@@ -92,6 +92,25 @@ public class UniversitySystem {
                 String mType = scanner.nextLine();
                 m.setManagerType(mType.equals("1") ? ManagerType.OR : ManagerType.DEPARTAMENT);
             }
+            if (newUser instanceof Teacher) {
+                Teacher t = (Teacher) newUser;
+                System.out.println("Select Teacher Title: 1. Tutor | 2. Lector | 3. Senior Lector | 4. Professor");
+                String tType = scanner.nextLine();
+                switch (tType) {
+                    case "1": t.setTitle(TeacherTitle.TUTOR); break;
+                    case "2": t.setTitle(TeacherTitle.LECTOR); break;
+                    case "3": t.setTitle(TeacherTitle.SENIOR_LECTOR); break;
+                    case "4":
+                        t.setTitle(TeacherTitle.PROFESSOR);
+                        ResearcherDecorator rd = new ResearcherDecorator(t);
+                        t.setResearcherData(rd);
+                        System.out.println("Professor automatically assigned Researcher status.");
+                        break;
+                    default:
+                        t.setTitle(TeacherTitle.LECTOR);
+                        System.out.println("Invalid choice, defaulting to Lector.");
+                }
+            }
 
             //downcasting
             Admin admin = (Admin) currentUser;
@@ -403,6 +422,8 @@ public class UniversitySystem {
         System.out.println("1. Add Course");
         System.out.println("2. View All Courses");
         System.out.println("3. Assign Course to Teacher");
+        System.out.println("4. Update Student Year of Study");
+        System.out.println("5. Assign Supervisor to Student");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -436,6 +457,85 @@ public class UniversitySystem {
         }
         else if (choice.equals("3")) {
             assignCourseLogic(manager);
+        }
+        else if (choice.equals("4")) {
+            System.out.println("\nStudents:");
+            boolean found = false;
+            for (User u : storage.getUsers()) {
+                if (u instanceof Student) {
+                    Student s = (Student) u;
+                    System.out.printf("%-20s | Login: %-10s | Year: %d | Faculty: %s%n",
+                            s.getFirstName() + " " + s.getLastName(),
+                            s.getLogin(), s.getYearOfStudy(), s.getFaculty());
+                    found = true;
+                }
+            }
+            if (!found) {
+                System.out.println("No students in the system.");
+                return;
+            }
+            System.out.print("Enter student login: ");
+            String login = scanner.nextLine();
+
+            User target = storage.getUserByLogin(login);
+            if (target == null || !(target instanceof Student)) {
+                System.out.println("Student not found.");
+                return;
+            }
+
+            Student student = (Student) target;
+            System.out.println("Current year: " + student.getYearOfStudy());
+            System.out.print("Enter new year (1-4): ");
+
+            try {
+                int year = Integer.parseInt(scanner.nextLine());
+                if (year < 1 || year > 4) {
+                    System.out.println("Year must be between 1 and 6.");
+                    return;
+                }
+                student.setYearOfStudy(year);
+                storage.addLog("Manager " + manager.getLastName() + " updated year of "
+                        + student.getLastName() + " to " + year);
+                if (year == 4) {
+                    assignSupervisor(student, manager);
+                }
+                storage.save();
+                System.out.println("Year updated successfully.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+            }
+        }
+        else if (choice.equals("5")) {
+            System.out.println("\nStudents:");
+            boolean found = false;
+            for (User u : storage.getUsers()) {
+                if (u instanceof Student) {
+                    Student s = (Student) u;
+                    String supervisorInfo = s.getSupervisor() != null
+                            ? ((ResearcherDecorator) s.getSupervisor()).getUser().getLastName()
+                            : "none";
+                    System.out.printf("%-20s | Login: %-10s | Year: %d | Supervisor: %s%n",
+                            s.getFirstName() + " " + s.getLastName(),
+                            s.getLogin(), s.getYearOfStudy(), supervisorInfo);
+                    found = true;
+                }
+            }
+            if (!found) {
+                System.out.println("No students in the system.");
+                return;
+            }
+
+            System.out.print("Enter student login: ");
+            String studentLogin = scanner.nextLine();
+            User targetStudent = storage.getUserByLogin(studentLogin);
+
+            if (targetStudent == null || !(targetStudent instanceof Student)) {
+                System.out.println("Student not found.");
+                return;
+            }
+
+            assignSupervisor((Student) targetStudent, manager);
+            storage.save();
         }
         else if (choice.equals("0")) {
             logout();
@@ -475,6 +575,59 @@ public class UniversitySystem {
                 break;
             default:
                 System.out.println("Invalid option.");
+        }
+    }
+
+    private void assignSupervisor(Student student, Manager manager) {
+        System.out.println("\nStudent is now 4th year — a supervisor must be assigned.");
+
+        System.out.println("--- Available Researchers ---");
+        boolean found = false;
+        for (User u : storage.getUsers()) {
+            if (u.getResearcherData() != null) {
+                ResearcherDecorator rd = u.getResearcherData();
+                System.out.printf("Login: %-10s | Name: %-20s | H-Index: %d%n",
+                        u.getLogin(),
+                        u.getFirstName() + " " + u.getLastName(),
+                        rd.calculateHIndex());
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No researchers available in the system.");
+            return;
+        }
+
+        System.out.print("Enter researcher login to assign as supervisor: ");
+        String login = scanner.nextLine();
+
+        User target = storage.getUserByLogin(login);
+
+        if (target == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        if (target.getResearcherData() == null) {
+            System.out.println("This user is not a researcher.");
+            return;
+        }
+
+        ResearcherDecorator rd = target.getResearcherData();
+
+        try {
+            if (rd.calculateHIndex() < 3) {
+                throw new LowHIndexException("Cannot assign supervisor: H-Index is "
+                        + rd.calculateHIndex() + " (minimum required: 3).");
+            }
+            student.setSupervisor(rd);
+            storage.addLog("Manager " + manager.getLastName() + " assigned "
+                    + target.getLastName() + " as supervisor for " + student.getLastName());
+            System.out.println("Supervisor assigned successfully!");
+
+        } catch (LowHIndexException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 

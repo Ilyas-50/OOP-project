@@ -35,7 +35,7 @@ public class Teacher extends Employee {
 
     public void putMark(Student student, Course course, double att1, double att2, double finalExam) {
         Mark mark = new Mark(course, att1, att2, finalExam);
-        student.getTranscript().addMark(mark);
+        student.addMark(mark);
         DataStorage.getInstance().addLog("Teacher " + this.getLastName() +
                 " put mark " + mark.getTotalScore() + " to " + student.getLastName() + " for " + course.getCourseName());
     }

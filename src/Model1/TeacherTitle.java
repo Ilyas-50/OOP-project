@@ -4,8 +4,8 @@ package Model1;
  * 
  */
 public enum TeacherTitle {
-    LECTURE,
-    PRACTICE,
+    TUTOR,
+    LECTOR,
     SENIOR_LECTOR,
     PROFESSOR
 }

@@ -22,6 +22,15 @@ public class Transcript implements java.io.Serializable{
         return false;
     }
 
+    public double calculateGpa() {
+        if (marks.isEmpty()) return 0.0;
+        double sum = 0;
+        for (Mark m : marks) {
+            sum += m.getTotalScore();
+        }
+        return sum / marks.size() / 25;
+    }
+
     @Override
     public String toString() {
         if (marks.isEmpty()) return "Transcript is empty.";

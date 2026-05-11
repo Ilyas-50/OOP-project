@@ -116,24 +116,36 @@ public class Main {
             student3.setFaculty(Faculty.KMA);
             student3.setYearOfStudy(3);
             // s3 уже прошёл OOP — добавляем оценку в транскрипт
-            student3.getTranscript().addMark(new Mark(oop, 28, 27, 38));
-            try { student3.registerToCourse(algo); } catch (CreditLimitExceededException e) { System.out.println(e.getMessage()); }
+            student3.addMark(new Mark(oop, 28, 27, 38));            try { student3.registerToCourse(algo); } catch (CreditLimitExceededException e) { System.out.println(e.getMessage()); }
             storage.getUsers().add(student3);
             System.out.println("Created student: s3/s3");
 
-            // --- RESEARCHER (teacher1 — профессор, значит всегда researcher) ---
             ResearcherDecorator rd = new ResearcherDecorator(teacher1);
             teacher1.setResearcherData(rd);
 
-            ResearchPaper paper = new ResearchPaper(
+            ResearchPaper paper1 = new ResearchPaper(
                     "Deep Learning in OOP Systems",
                     Arrays.asList((Researcher) rd),
-                    "IEEE Journal",
-                    12,
-                    new Date(),
-                    "10.1109/example.2024"
+                    "IEEE Journal", 12, new Date(), "10.1109/example.2024"
             );
-            rd.addPaper(paper);
+            ResearchPaper paper2 = new ResearchPaper(
+                    "Algorithms in Modern Software Engineering",
+                    Arrays.asList((Researcher) rd),
+                    "ACM Computing", 18, new Date(), "10.1145/example.2024"
+            );
+            ResearchPaper paper3 = new ResearchPaper(
+                    "Design Patterns in Enterprise Systems",
+                    Arrays.asList((Researcher) rd),
+                    "Springer Journal", 15, new Date(), "10.1007/example.2024"
+            );
+
+            paper1.addCitation(); paper1.addCitation(); paper1.addCitation();
+            paper2.addCitation(); paper2.addCitation(); paper2.addCitation();
+            paper3.addCitation(); paper3.addCitation(); paper3.addCitation();
+
+            rd.addPaper(paper1);
+            rd.addPaper(paper2);
+            rd.addPaper(paper3);
 
             storage.save();
             System.out.println("\nInitial data created and saved.");

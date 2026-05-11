@@ -46,6 +46,11 @@ public class Student extends User {
 //        System.out.println("Successfully registered to " + course.getCourseName());
     }
 
+    public void addMark(Mark mark) {
+        this.transcript.addMark(mark);
+        this.gpa = this.transcript.calculateGpa();
+    }
+
     public void viewTranscript() {
         System.out.println(transcript.toString());
     }
@@ -64,4 +69,6 @@ public class Student extends User {
 
     public int getTotalCredits() { return totalCredits; }
 
+    public Researcher getSupervisor() { return supervisor; }
+    public void setSupervisor(Researcher supervisor) { this.supervisor = supervisor; }
 }
