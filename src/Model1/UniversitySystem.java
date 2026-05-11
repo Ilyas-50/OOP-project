@@ -347,6 +347,7 @@ public class UniversitySystem {
         System.out.println("2. View All Teachers");
         System.out.println("3. Statistical Report");
         System.out.println("4. View Teacher Ratings");
+        System.out.println("5. View All Research Papers");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -411,6 +412,30 @@ public class UniversitySystem {
                 }
             }
             if (!found) System.out.println("No teachers found.");
+        }
+        else if (choice.equals("5")) {
+            List<ResearchPaper> allPapers = storage.getAllPapers();
+            if (allPapers.isEmpty()) {
+                System.out.println("No research papers in the system.");
+                return;
+            }
+
+            System.out.println("Sort by: 1. Citations | 2. Date | 3. Length");
+            String sort = scanner.nextLine();
+
+            Comparator<ResearchPaper> comparator;
+            if (sort.equals("2"))      comparator = new DateComparator();
+            else if (sort.equals("3")) comparator = new LengthComparator();
+            else                       comparator = new CitationsComparator();
+
+            List<ResearchPaper> sorted = new ArrayList<>(allPapers);
+            sorted.sort(comparator);
+
+            System.out.println("\n--- All Research Papers ---");
+            for (int i = 0; i < sorted.size(); i++) {
+                System.out.println((i + 1) + ". " + sorted.get(i).getCitationInFormat()
+                        + " | Citations: " + sorted.get(i).getCitations());
+            }
         }
         else if (choice.equals("0")) {
             logout();
