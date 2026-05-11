@@ -35,14 +35,25 @@ public class Main {
             System.out.println("Created admin: admin/admin");
 
             // --- MANAGER ---
-            Manager manager = new Manager();
-            manager.setFirstName("John");
-            manager.setLastName("Manager");
-            manager.setLogin("m");
-            manager.setPassword("m");
-            manager.setId(String.valueOf(storage.getNextUserId()));
-            storage.getUsers().add(manager);
-            System.out.println("Created manager: m/m");
+            Manager managerOR = new Manager();
+            managerOR.setFirstName("John");
+            managerOR.setLastName("Smith");
+            managerOR.setLogin("m");
+            managerOR.setPassword("m");
+            managerOR.setId(String.valueOf(storage.getNextUserId()));
+            managerOR.setManagerType(ManagerType.OR);
+            storage.getUsers().add(managerOR);
+            System.out.println("Created OR manager: m/m");
+
+            Manager managerDept = new Manager();
+            managerDept.setFirstName("Anna");
+            managerDept.setLastName("Johnson");
+            managerDept.setLogin("m2");
+            managerDept.setPassword("m2");
+            managerDept.setId(String.valueOf(storage.getNextUserId()));
+            managerDept.setManagerType(ManagerType.DEPARTAMENT);
+            storage.getUsers().add(managerDept);
+            System.out.println("Created Department manager: m2/m2");
 
             // --- TEACHERS ---
             Teacher teacher1 = new Teacher();

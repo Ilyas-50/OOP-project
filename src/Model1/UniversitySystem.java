@@ -86,6 +86,12 @@ public class UniversitySystem {
                 s.setFaculty(Faculty.valueOf(scanner.nextLine().toUpperCase()));
                 s.setYearOfStudy(1);
             }
+            if (newUser instanceof Manager) {
+                Manager m = (Manager) newUser;
+                System.out.println("Select Manager Type: 1. Office of Registrar (OR) | 2. Department");
+                String mType = scanner.nextLine();
+                m.setManagerType(mType.equals("1") ? ManagerType.OR : ManagerType.DEPARTAMENT);
+            }
 
             //downcasting
             Admin admin = (Admin) currentUser;
@@ -304,17 +310,76 @@ public class UniversitySystem {
 
     public void showManagerMenu() {
         Manager manager = (Manager) currentUser;
-        System.out.println("\n--- MANAGER MENU ---");
-        System.out.println("1. Add Course to System");
-        System.out.println("2. View All Courses");
-        System.out.println("3. Assign Course to Teacher");
-        System.out.println("4. View Teacher Ratings");
+
+        if (manager.getManagerType() == ManagerType.OR) {
+            showORManagerMenu(manager);
+        } else {
+            showDepartmentManagerMenu(manager);
+        }
+    }
+
+    private void showORManagerMenu(Manager manager) {
+        System.out.println("\n--- MANAGER MENU (Office of Registrar) ---");
+        System.out.println("1. View All Students (sorted)");
+        System.out.println("2. Statistical Report");
+        System.out.println("3. View Teacher Ratings");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
 
         if (choice.equals("1")) {
-            System.out.print("Enter Course Code (CS101): ");
+            System.out.println("Sort by: 1. GPA | 2. Alphabetically");
+            String sort = scanner.nextLine();
+
+            List<Student> students = new ArrayList<>();
+            for (User u : storage.getUsers()) {
+                if (u instanceof Student) students.add((Student) u);
+            }
+
+            if (sort.equals("1")) {
+                students.sort((a, b) -> Double.compare(b.getGpa(), a.getGpa()));
+            } else {
+                students.sort(Comparator.comparing(User::getLastName));
+            }
+
+            System.out.println("\n--- Students ---");
+            for (Student s : students) {
+                System.out.printf("%-20s | Faculty: %-6s | Year: %d | GPA: %.2f%n",
+                        s.getFirstName() + " " + s.getLastName(),
+                        s.getFaculty(), s.getYearOfStudy(), s.getGpa());
+            }
+        }
+        else if (choice.equals("2")) {
+            manager.printStatisticalReport();
+        }
+        else if (choice.equals("3")) {
+            System.out.println("\n--- Teacher Ratings ---");
+            boolean found = false;
+            for (User u : storage.getUsers()) {
+                if (u instanceof Teacher) {
+                    Teacher t = (Teacher) u;
+                    found = true;
+                    System.out.printf("%-20s | Rating: %.1f/10 (%d votes)%n", t.getFirstName() + " " + t.getLastName(), t.getAverageRating(), t.getRatings().size());
+                }
+            }
+            if (!found) System.out.println("No teachers found.");
+        }
+        else if (choice.equals("0")) {
+            logout();
+        }
+    }
+
+    private void showDepartmentManagerMenu(Manager manager) {
+        System.out.println("\n--- MANAGER MENU (Department) ---");
+        System.out.println("1. Add Course");
+        System.out.println("2. View All Courses");
+        System.out.println("3. Assign Course to Teacher");
+        System.out.println("0. Logout");
+
+        String choice = scanner.nextLine();
+
+        if (choice.equals("1")) {
+            System.out.print("Enter Course Code (e.g. CS101): ");
             String code = scanner.nextLine();
             System.out.print("Enter Course Name: ");
             String name = scanner.nextLine();
@@ -331,34 +396,17 @@ public class UniversitySystem {
             manager.addCourse(newCourse);
         }
         else if (choice.equals("2")) {
-            System.out.println("Courses:");
             List<Course> allCourses = storage.getCourses();
-
             if (allCourses.isEmpty()) {
                 System.out.println("No courses registered yet.");
             } else {
                 for (Course c : allCourses) {
-                    System.out.println(c.getCourseName() + "(" + c.getCourseCode() + ") : " + c.getCredits() + " credits");
+                    System.out.println(c.getCourseName() + " (" + c.getCourseCode() + ") : " + c.getCredits() + " credits");
                 }
             }
         }
         else if (choice.equals("3")) {
             assignCourseLogic(manager);
-        }
-        else if (choice.equals("4")) {
-            System.out.println("\n--- Teacher Ratings ---");
-            boolean found = false;
-            for (User u : storage.getUsers()) {
-                if (u instanceof Teacher) {
-                    Teacher t = (Teacher) u;
-                    found = true;
-                    System.out.printf("%-20s | Rating: %.1f/10 (%d votes)%n",
-                            t.getFirstName() + " " + t.getLastName(),
-                            t.getAverageRating(),
-                            t.getRatings().size());
-                }
-            }
-            if (!found) System.out.println("No teachers found.");
         }
         else if (choice.equals("0")) {
             logout();
