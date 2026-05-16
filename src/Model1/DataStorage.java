@@ -13,6 +13,7 @@ public class DataStorage implements java.io.Serializable {
     private List<String> systemLogs;
     private int userCounter = 0;
     private List<ResearchProject> allProjects;
+    private MessageSystem messageSystem = new MessageSystem();
 
     private static final String FILE_PATH = System.getProperty("user.dir") + File.separator + "storage.dat";
 
@@ -56,6 +57,7 @@ public class DataStorage implements java.io.Serializable {
             this.allPapers = (loadedData.allPapers != null) ? loadedData.allPapers : new ArrayList<>();
             this.systemLogs = (loadedData.systemLogs != null) ? loadedData.systemLogs : new ArrayList<>();
             this.allProjects = (loadedData.allProjects != null) ? loadedData.allProjects : new ArrayList<>();
+            this.messageSystem = (loadedData.messageSystem != null) ? loadedData.messageSystem : new MessageSystem();
             this.userCounter = loadedData.userCounter;
 
         } catch (Exception e) {
@@ -86,6 +88,7 @@ public class DataStorage implements java.io.Serializable {
         this.systemLogs.add(new Date() + ": " + message);
     }
 
+    public MessageSystem getMessageSystem() { return messageSystem; }
 
     public List<ResearchProject> getProjectsForResearcher(Researcher res) {
         List<ResearchProject> myProjects = new ArrayList<>();

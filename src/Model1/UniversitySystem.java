@@ -60,6 +60,7 @@ public class UniversitySystem {
 
     public void showAdminMenu() {
         System.out.println("1. Add User\n2. Remove User\n3. View Logs\n4. View Users\n5. Make someone Researcher\n0. Logout");
+        System.out.println("6. Messages");
         String choice = scanner.nextLine();
 
         if (choice.equals("1")) {
@@ -199,6 +200,7 @@ public class UniversitySystem {
                 System.out.println("Success! " + targetUser.getFirstName() + " is now a researcher.");
             }
         }
+        else if (choice.equals("6")) { showMessagesMenu(currentUser); }
         else if (choice.equals("0")) {
             logout();
         }
@@ -348,6 +350,7 @@ public class UniversitySystem {
         System.out.println("3. Statistical Report");
         System.out.println("4. View Teacher Ratings");
         System.out.println("5. View All Research Papers");
+        System.out.println("6. Messages");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -437,6 +440,7 @@ public class UniversitySystem {
                         + " | Citations: " + sorted.get(i).getCitations());
             }
         }
+        else if (choice.equals("6")) { showMessagesMenu(currentUser); }
         else if (choice.equals("0")) {
             logout();
         }
@@ -449,6 +453,7 @@ public class UniversitySystem {
         System.out.println("3. Assign Course to Teacher");
         System.out.println("4. Update Student Year of Study");
         System.out.println("5. Assign Supervisor to Student");
+        System.out.println("6. Messages");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -545,6 +550,7 @@ public class UniversitySystem {
                     found = true;
                 }
             }
+
             if (!found) {
                 System.out.println("No students in the system.");
                 return;
@@ -562,6 +568,7 @@ public class UniversitySystem {
             assignSupervisor((Student) targetStudent, manager);
             storage.save();
         }
+        else if (choice.equals("6")) { showMessagesMenu(currentUser); }
         else if (choice.equals("0")) {
             logout();
         }
@@ -573,6 +580,7 @@ public class UniversitySystem {
         System.out.println("1. View My Courses");
         System.out.println("2. Put Marks");
         System.out.println("3. View Students Info");
+        System.out.println("4. Messages");
         System.out.println("0. Logout");
 
         if (teacher.getResearcherData() != null) {
@@ -591,6 +599,8 @@ public class UniversitySystem {
             case "3":
                 viewCourseStudents(teacher);
                 break;
+            case "4":
+                showMessagesMenu(currentUser); break;
             case "R":
             case "r":
                 if (teacher.getResearcherData() != null) showResearcherMenu();
@@ -600,6 +610,55 @@ public class UniversitySystem {
                 break;
             default:
                 System.out.println("Invalid option.");
+        }
+    }
+
+    private void sendMessage(User sender) {
+        System.out.println("\n--- Users ---");
+        for (User u : storage.getUsers()) {
+            if (!u.getLogin().equals(sender.getLogin())) {
+                System.out.printf("Login: %-10s | %s %s | %s%n",
+                        u.getLogin(), u.getFirstName(), u.getLastName(),
+                        u.getClass().getSimpleName());
+            }
+        }
+
+        System.out.print("Enter receiver login: ");
+        String receiverLogin = scanner.nextLine();
+        User receiver = storage.getUserByLogin(receiverLogin);
+
+        if (receiver == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        System.out.print("Enter message: ");
+        String text = scanner.nextLine();
+        storage.getMessageSystem().sendMessage(sender, receiver, text);
+    }
+
+    private void showMessagesMenu(User user) {
+        System.out.println("\n--- MESSAGES ---");
+        System.out.println("1. Send Message");
+        System.out.println("2. View Messages");
+        System.out.println("0. Back");
+
+        String choice = scanner.nextLine();
+
+        if (choice.equals("1")) {
+            sendMessage(user);
+        } else if (choice.equals("2")) {
+            List<Message> inbox = storage.getMessageSystem().getInbox(user);
+            if (inbox.isEmpty()) {
+                System.out.println("No messages");
+                return;
+            }
+            System.out.println("\n--- Inbox ---");
+            for (Message m : inbox) {
+                System.out.println(m);
+                m.markAsRead();
+            }
+            storage.save();
         }
     }
 
