@@ -163,10 +163,14 @@ public class UniversitySystem {
         else if (choice.equals("4")) {
             List<User> users = ((Admin) currentUser).viewUsers();
             if (users.isEmpty()) {
-                System.out.println("Logs are empty");
+                System.out.println("No users found.");
             } else {
-                for (User user : users) {
-                    System.out.println(user.getLogin());
+                System.out.println("\n--- Users ---");
+                for (User u : users) {
+                    System.out.printf("Login: %-10s | Password: %-10s | Name: %-20s | Status: %s%n",
+                            u.getLogin(), u.getPassword(),
+                            u.getFirstName() + " " + u.getLastName(),
+                            u.getClass().getSimpleName());
                 }
             }
         }
