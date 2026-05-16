@@ -656,7 +656,6 @@ public class UniversitySystem {
             System.out.println("\n--- Inbox ---");
             for (Message m : inbox) {
                 System.out.println(m);
-                m.markAsRead();
             }
             storage.save();
         }

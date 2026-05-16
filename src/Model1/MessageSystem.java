@@ -20,16 +20,6 @@ public class MessageSystem implements Serializable {
         System.out.println("Message sent to " + receiver.getFirstName() + " " + receiver.getLastName());
     }
 
-    public List<Message> getUnreadMessages(User u) {
-        List<Message> unread = new ArrayList<>();
-        for (Message m : messages) {
-            if (m.getReceiver().getLogin().equals(u.getLogin()) && !m.isRead()) {
-                unread.add(m);
-            }
-        }
-        return unread;
-    }
-
     public List<Message> getInbox(User u) {
         List<Message> inbox = new ArrayList<>();
         for (Message m : messages) {
