@@ -53,6 +53,13 @@ public class Manager extends Employee {
         }
     }
 
+    public void addLessonToTeacher(Teacher teacher, Lesson lesson) {
+        teacher.addLesson(lesson);
+        DataStorage.getInstance().addLog("Manager " + this.getLastName()
+                + " added lesson " + lesson + " to teacher " + teacher.getLastName());
+        DataStorage.getInstance().save();
+    }
+
     public ManagerType getManagerType() { return managerType; }
     public void setManagerType(ManagerType managerType) { this.managerType = managerType; }
 }

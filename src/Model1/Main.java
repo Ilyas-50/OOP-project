@@ -68,6 +68,10 @@ public class Main {
             storage.getUsers().add(teacher1);
             System.out.println("Created teacher: t/t");
 
+            teacher1.addLesson(new Lesson(oop, LessonType.LECTURE, "Mon 09:00", "314"));
+            teacher1.addLesson(new Lesson(oop, LessonType.PRACTICE, "Wed 11:00", "201"));
+            teacher1.addLesson(new Lesson(algo, LessonType.LECTURE, "Tue 13:00", "314"));
+
             Teacher teacher2 = new Teacher();
             teacher2.setFirstName("Bob");
             teacher2.setLastName("Jones");
@@ -79,6 +83,8 @@ public class Main {
             teacher2.addCourse(db);
             storage.getUsers().add(teacher2);
             System.out.println("Created teacher: t2/t2");
+
+
 
             // --- STUDENTS ---
             Student student1 = new Student();

@@ -59,7 +59,11 @@ public class UniversitySystem {
     }
 
     public void showAdminMenu() {
-        System.out.println("1. Add User\n2. Remove User\n3. View Logs\n4. View Users\n5. Make someone Researcher");
+        System.out.println("1. Add User");
+        System.out.println("2. Remove User");
+        System.out.println("3. View Logs");
+        System.out.println("4. View Users");
+        System.out.println("5. Make someone Researcher");
         System.out.println("6. Messages");
         System.out.println("7. Change Password");
         System.out.println("0. Logout");
@@ -465,8 +469,9 @@ public class UniversitySystem {
         System.out.println("3. Assign Course to Teacher");
         System.out.println("4. Update Student Year of Study");
         System.out.println("5. Assign Supervisor to Student");
-        System.out.println("6. Messages");
-        System.out.println("7. Change Password");
+        System.out.println("6. Add Lesson to Teacher");
+        System.out.println("7. Messages");
+        System.out.println("8. Change Password");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -581,8 +586,11 @@ public class UniversitySystem {
             assignSupervisor((Student) targetStudent, manager);
             storage.save();
         }
-        else if (choice.equals("6")) { showMessagesMenu(currentUser); }
-        else if (choice.equals("7")) { changePassword(currentUser); }
+        else if (choice.equals("6")) {
+            addLessonToTeacherLogic(manager);
+        }
+        else if (choice.equals("7")) { showMessagesMenu(currentUser); }
+        else if (choice.equals("8")) { changePassword(currentUser); }
         else if (choice.equals("0")) {
             logout();
         }
@@ -594,8 +602,9 @@ public class UniversitySystem {
         System.out.println("1. View My Courses");
         System.out.println("2. Put Marks");
         System.out.println("3. View Students Info");
-        System.out.println("4. Messages");
-        System.out.println("5. Change Password");
+        System.out.println("4. View My Schedule");
+        System.out.println("5. Messages");
+        System.out.println("6. Change Password");
         System.out.println("0. Logout");
 
         if (teacher.getResearcherData() != null) {
@@ -614,9 +623,10 @@ public class UniversitySystem {
             case "3":
                 viewCourseStudents(teacher);
                 break;
-            case "4":
+            case "4": teacher.viewSchedule(); break;
+            case "5":
                 showMessagesMenu(currentUser); break;
-            case "5": changePassword(currentUser); break;
+            case "6": changePassword(currentUser); break;
             case "R":
             case "r":
                 if (teacher.getResearcherData() != null) showResearcherMenu();
@@ -674,6 +684,60 @@ public class UniversitySystem {
                 System.out.println(m);
             }
             storage.save();
+        }
+    }
+
+    private void addLessonToTeacherLogic(Manager manager) {
+        System.out.println("\nAvailable Teachers:");
+        for (User u : storage.getUsers()) {
+            if (u instanceof Teacher) {
+                System.out.printf("Login: %-10s | %s %s%n",
+                        u.getLogin(), u.getFirstName(), u.getLastName());
+            }
+        }
+
+        System.out.print("Enter teacher login: ");
+        User target = storage.getUserByLogin(scanner.nextLine());
+        if (target == null || !(target instanceof Teacher)) {
+            System.out.println("Teacher not found.");
+            return;
+        }
+        Teacher teacher = (Teacher) target;
+
+        List<Course> courses = storage.getCourses();
+        if (courses.isEmpty()) {
+            System.out.println("No courses in system.");
+            return;
+        }
+        System.out.println("\nCourses:");
+        for (int i = 0; i < courses.size(); i++) {
+            System.out.println((i + 1) + ". " + courses.get(i).getCourseName());
+        }
+        System.out.print("Select course: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine()) - 1;
+            if (idx < 0 || idx >= courses.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+            Course selectedCourse = courses.get(idx);
+
+            System.out.println("Lesson type: 1. Lecture | 2. Practice");
+            String typeChoice = scanner.nextLine();
+            LessonType type = typeChoice.equals("1") ? LessonType.LECTURE : LessonType.PRACTICE;
+
+            System.out.print("Enter time (e.g. Mon 09:00): ");
+            String time = scanner.nextLine();
+
+            System.out.print("Enter room (e.g. 404): ");
+            String room = scanner.nextLine();
+
+            Lesson lesson = new Lesson(selectedCourse, type, time, room);
+            manager.addLessonToTeacher(teacher, lesson);
+            System.out.println("Lesson added successfully!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
         }
     }
 
@@ -1074,15 +1138,6 @@ public class UniversitySystem {
         System.out.println("Paper added successfully!");
     }
 
-//    private void createResearchProject(ResearcherDecorator res) {
-//        System.out.print("Enter project topic: ");
-//        String topic = scanner.nextLine();
-//
-//        res.createProject(topic);
-//
-//        System.out.println("Project created successfully!");
-//    }
-
     private void joinResearchProject(ResearcherDecorator res) {
         List<ResearchProject> allProjects = storage.getAllProjects();
         if (allProjects.isEmpty()) {
@@ -1245,34 +1300,3 @@ public class UniversitySystem {
 
 
 }
-
-//public void makeUserResearcher() {
-//    System.out.print("Enter user login to make researcher: ");
-//    String login = scanner.nextLine();
-//
-//    // 1. Ищем пользователя в DataStorage
-//    User user = storage.getUsers().stream()
-//            .filter(u -> u.getLogin().equals(login))
-//            .findFirst()
-//            .orElse(null);
-//
-//    if (user == null) {
-//        System.out.println("User not found.");
-//        return;
-//    }
-//
-//    // 2. Проверяем, не является ли он уже исследователем
-//    if (user.getResearcherData() != null) {
-//        System.out.println("This user is already a researcher.");
-//        return;
-//    }
-//
-//    // 3. Создаем декоратор и привязываем его к пользователю
-//    ResearcherDecorator decorator = new ResearcherDecorator(user);
-//    user.setResearcherData(decorator);
-//
-//    // 4. Сохраняем изменения в файл
-//    storage.save();
-//
-//    System.out.println(user.getLastName() + " is now a Researcher!");
-//}

@@ -6,6 +6,7 @@ public class Teacher extends Employee {
     private TeacherTitle title;
     private List<Course> courses = new ArrayList<>();
     private List<Integer> ratings = new ArrayList<>();
+    private List<Lesson> lessons = new ArrayList<>();
 
     public Teacher() {
         super();
@@ -19,6 +20,14 @@ public class Teacher extends Employee {
         ratings.add(rating);
     }
 
+    public void addLesson(Lesson lesson) {
+        this.lessons.add(lesson);
+    }
+
+    public List<Lesson> getLessons() {
+        return lessons;
+    }
+
     public double getAverageRating() {
         if (ratings == null || ratings.isEmpty()) return 0.0;
         int sum = 0;
@@ -30,6 +39,17 @@ public class Teacher extends Employee {
         System.out.println("Instructor's courses:");
         for (Course c : courses) {
             System.out.println("- " + c.getCourseName());
+        }
+    }
+
+    public void viewSchedule() {
+        if (lessons.isEmpty()) {
+            System.out.println("No lessons scheduled.");
+            return;
+        }
+        System.out.println("Your Schedule:");
+        for (Lesson l : lessons) {
+            System.out.println(l);
         }
     }
 
