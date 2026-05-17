@@ -59,8 +59,10 @@ public class UniversitySystem {
     }
 
     public void showAdminMenu() {
-        System.out.println("1. Add User\n2. Remove User\n3. View Logs\n4. View Users\n5. Make someone Researcher\n0. Logout");
+        System.out.println("1. Add User\n2. Remove User\n3. View Logs\n4. View Users\n5. Make someone Researcher");
         System.out.println("6. Messages");
+        System.out.println("7. Change Password");
+        System.out.println("0. Logout");
         String choice = scanner.nextLine();
 
         if (choice.equals("1")) {
@@ -205,6 +207,7 @@ public class UniversitySystem {
             }
         }
         else if (choice.equals("6")) { showMessagesMenu(currentUser); }
+        else if (choice.equals("7")) { changePassword(currentUser); }
         else if (choice.equals("0")) {
             logout();
         }
@@ -217,6 +220,7 @@ public class UniversitySystem {
         System.out.println("2. View Transcript (Marks)");
         System.out.println("3. Register to a Course");
         System.out.println("4. Rate a Teacher");
+        System.out.println("5. Change Password");
         System.out.println("0. Logout");
 
         if (student.getResearcherData() != null) {
@@ -241,6 +245,8 @@ public class UniversitySystem {
             case "4":
                 rateTeacher(student);
                 break;
+
+            case "5": changePassword(currentUser); break;
 
             case "R":
             case "r":
@@ -355,6 +361,7 @@ public class UniversitySystem {
         System.out.println("4. View Teacher Ratings");
         System.out.println("5. View All Research Papers");
         System.out.println("6. Messages");
+        System.out.println("7. Change Password");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -445,6 +452,7 @@ public class UniversitySystem {
             }
         }
         else if (choice.equals("6")) { showMessagesMenu(currentUser); }
+        else if (choice.equals("7")) { changePassword(currentUser); }
         else if (choice.equals("0")) {
             logout();
         }
@@ -458,6 +466,7 @@ public class UniversitySystem {
         System.out.println("4. Update Student Year of Study");
         System.out.println("5. Assign Supervisor to Student");
         System.out.println("6. Messages");
+        System.out.println("7. Change Password");
         System.out.println("0. Logout");
 
         String choice = scanner.nextLine();
@@ -573,6 +582,7 @@ public class UniversitySystem {
             storage.save();
         }
         else if (choice.equals("6")) { showMessagesMenu(currentUser); }
+        else if (choice.equals("7")) { changePassword(currentUser); }
         else if (choice.equals("0")) {
             logout();
         }
@@ -585,6 +595,7 @@ public class UniversitySystem {
         System.out.println("2. Put Marks");
         System.out.println("3. View Students Info");
         System.out.println("4. Messages");
+        System.out.println("5. Change Password");
         System.out.println("0. Logout");
 
         if (teacher.getResearcherData() != null) {
@@ -605,6 +616,7 @@ public class UniversitySystem {
                 break;
             case "4":
                 showMessagesMenu(currentUser); break;
+            case "5": changePassword(currentUser); break;
             case "R":
             case "r":
                 if (teacher.getResearcherData() != null) showResearcherMenu();
@@ -663,6 +675,25 @@ public class UniversitySystem {
             }
             storage.save();
         }
+    }
+
+
+    private void changePassword(User user) {
+        System.out.print("Enter current password: ");
+        String current = scanner.nextLine();
+
+        if (!user.getPassword().equals(current)) {
+            System.out.println("Incorrect current password.");
+            return;
+        }
+
+        System.out.print("Enter new password: ");
+        String newPass = scanner.nextLine();
+
+        user.setPassword(newPass);
+        storage.addLog("User " + user.getLogin() + " changed their password.");
+        storage.save();
+        System.out.println("Password changed successfully!");
     }
 
     private void assignSupervisor(Student student, Manager manager) {
