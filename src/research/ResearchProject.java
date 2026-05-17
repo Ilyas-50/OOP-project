@@ -1,10 +1,13 @@
 package research;
 
 import exceptions.NotAResearcherException;
-
 import java.io.*;
 import java.util.*;
 
+/**
+ * Represents a university research project.
+ * Groups researchers and their published papers under a common topic.
+ */
 public class ResearchProject implements Serializable {
 
     private String topic;
@@ -22,7 +25,10 @@ public class ResearchProject implements Serializable {
         this.participants = new ArrayList<>();
     }
 
-    // По требованию: если не Researcher — бросаем исключение
+    /**
+     * Adds a researcher as participant.
+     * @throws NotAResearcherException if researcher is null.
+     */
     public void addParticipant(Researcher r) throws NotAResearcherException {
         if (r == null) {
             throw new NotAResearcherException("Cannot add null as a participant.");
@@ -35,6 +41,9 @@ public class ResearchProject implements Serializable {
         System.out.println("Participant added to project: " + topic);
     }
 
+    /**
+     * Adds a paper to the project if not already present.
+     */
     public void addPaper(ResearchPaper p) {
         if (p == null) return;
         if (publishedPapers.contains(p)) {
@@ -44,23 +53,6 @@ public class ResearchProject implements Serializable {
         publishedPapers.add(p);
         System.out.println("Paper \"" + p.getTitle() + "\" added to project: " + topic);
     }
-
-//    public Researcher getTopCitedResearcher() {
-//        Researcher top = null;
-//        int maxCitations = -1;
-//
-//        for (Researcher r : participants) {
-//            int total = 0;
-//            for (ResearchPaper p : r.getPapers()) {
-//                total += p.getCitations();
-//            }
-//            if (total > maxCitations) {
-//                maxCitations = total;
-//                top = r;
-//            }
-//        }
-//        return top;
-//    }
 
     @Override
     public String toString() {

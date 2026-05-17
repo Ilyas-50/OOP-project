@@ -1,11 +1,14 @@
-package Exe;
+package academic;
 
 import core.DataStorage;
 import users.User;
-
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Manages messaging between users in the university system.
+ * Stores all messages and provides inbox/sent filtering.
+ */
 public class MessageSystem implements Serializable {
 
     private List<Message> messages;
@@ -14,6 +17,9 @@ public class MessageSystem implements Serializable {
         this.messages = new ArrayList<>();
     }
 
+    /**
+     * Creates and sends a message from sender to receiver, logs it and saves.
+     */
     public void sendMessage(User sender, User receiver, String text) {
         Message msg = new Message(sender, receiver, text);
         messages.add(msg);
@@ -23,22 +29,24 @@ public class MessageSystem implements Serializable {
         System.out.println("Message sent to " + receiver.getFirstName() + " " + receiver.getLastName());
     }
 
+    /**
+     * Returns all messages received by the given user.
+     */
     public List<Message> getInbox(User u) {
         List<Message> inbox = new ArrayList<>();
         for (Message m : messages) {
-            if (m.getReceiver().getLogin().equals(u.getLogin())) {
-                inbox.add(m);
-            }
+            if (m.getReceiver().getLogin().equals(u.getLogin())) inbox.add(m);
         }
         return inbox;
     }
 
+    /**
+     * Returns all messages sent by the given user.
+     */
     public List<Message> getSent(User u) {
         List<Message> sent = new ArrayList<>();
         for (Message m : messages) {
-            if (m.getSender().getLogin().equals(u.getLogin())) {
-                sent.add(m);
-            }
+            if (m.getSender().getLogin().equals(u.getLogin())) sent.add(m);
         }
         return sent;
     }

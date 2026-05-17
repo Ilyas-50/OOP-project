@@ -6,10 +6,14 @@ import academic.Mark;
 import academic.Transcript;
 import exceptions.CreditLimitExceededException;
 import research.Researcher;
-
 import java.util.*;
 
+/**
+ * Represents a bachelor student in the university system.
+ * Handles course registration, marks, transcript and GPA tracking.
+ */
 public class Student extends User {
+
     private int yearOfStudy;
     private int totalCredits;
     private double gpa;
@@ -24,6 +28,9 @@ public class Student extends User {
         this.transcript = new Transcript();
     }
 
+    /**
+     * Prints all currently enrolled courses.
+     */
     public void viewCourses() {
         System.out.println("Enrolled Courses:");
         for (Course c : enrolledCourses) {
@@ -31,10 +38,14 @@ public class Student extends User {
         }
     }
 
+    /**
+     * Registers student to a course.
+     * Checks prerequisites and credit limit before enrolling.
+     * @throws CreditLimitExceededException if adding course exceeds 21 credits.
+     */
     public void registerToCourse(Course course) throws CreditLimitExceededException {
         if (!course.getPrerequisites().isEmpty()) {
-            Course required = course.getPrerequisites().getFirst(); //один пререк у предмета
-
+            Course required = course.getPrerequisites().getFirst();
             if (!transcript.isCoursePassed(required)) {
                 System.out.println("Registration failed: You must pass " + required.getCourseName() + " first!");
                 return;
@@ -49,14 +60,19 @@ public class Student extends User {
 
         this.enrolledCourses.add(course);
         this.totalCredits += course.getCredits();
-//        System.out.println("Successfully registered to " + course.getCourseName());
     }
 
+    /**
+     * Adds a mark to transcript and recalculates GPA.
+     */
     public void addMark(Mark mark) {
         this.transcript.addMark(mark);
         this.gpa = this.transcript.calculateGpa();
     }
 
+    /**
+     * Prints the academic transcript.
+     */
     public void viewTranscript() {
         System.out.println(transcript.toString());
     }
@@ -72,7 +88,6 @@ public class Student extends User {
 
     public List<Course> getEnrolledCourses() { return enrolledCourses; }
     public Transcript getTranscript() { return transcript; }
-
     public int getTotalCredits() { return totalCredits; }
 
     public Researcher getSupervisor() { return supervisor; }

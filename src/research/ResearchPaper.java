@@ -1,10 +1,13 @@
 package research;
 
 import users.User;
-
 import java.util.*;
 import java.io.Serializable;
 
+/**
+ * Represents a scientific research paper.
+ * Stores metadata including authors, journal, citations and DOI.
+ */
 public class ResearchPaper implements Serializable {
 
     private String title;
@@ -15,6 +18,9 @@ public class ResearchPaper implements Serializable {
     private int citations;
     private String doi;
 
+    /**
+     * Creates a research paper with zero citations by default.
+     */
     public ResearchPaper(String title, List<Researcher> authors, String journal, int pages, Date date, String doi) {
         this.title = title;
         this.authors = authors;
@@ -25,23 +31,13 @@ public class ResearchPaper implements Serializable {
         this.citations = 0;
     }
 
-//    public String getCitationInFormat() {
-//        List<String> lastNames = new ArrayList<>();
-//        for (Researcher r : authors) {
-//            User user = (User) r;
-//            lastNames.add(user.getLastName());
-//        }
-//        String authorsStr = String.join(", ", lastNames);
-//        return String.format("%s. \"%s\". %s, %d. DOI: %s",
-//                authorsStr, title, journal, pages, doi);
-//    }
+    /**
+     * Returns formatted citation string: "Author. "Title". Journal, pages. DOI: doi"
+     */
     public String getCitationInFormat() {
         List<String> lastNames = new ArrayList<>();
         for (Researcher r : authors) {
-            if (r instanceof User) { //на всякйи проверка. потом удалить
-                lastNames.add(((User) r).getLastName());
-            }
-            else if (r instanceof ResearcherDecorator) {
+            if (r instanceof ResearcherDecorator) {
                 User wrappedUser = ((ResearcherDecorator) r).getUser();
                 lastNames.add(wrappedUser.getLastName());
             }
@@ -51,40 +47,18 @@ public class ResearchPaper implements Serializable {
                 authorsStr, title, journal, pages, doi);
     }
 
-    public void addCitation() {
-        this.citations++;
-    }
-
-    public int getCitations() {
-        return citations;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public List<Researcher> getAuthors() {
-        return authors;
-    }
-
-    public String getJournal() {
-        return journal;
-    }
-
-    public int getPages() {
-        return pages;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public String getDoi() {
-        return doi;
-    }
+    public void addCitation() { this.citations++; }
 
     @Override
     public String toString() {
         return "Paper: '" + title + "' | Journal: " + journal + " | Citations: " + citations;
     }
+
+    public int getCitations() { return citations; }
+    public String getTitle() { return title; }
+    public List<Researcher> getAuthors() { return authors; }
+    public String getJournal() { return journal; }
+    public int getPages() { return pages; }
+    public Date getDate() { return date; }
+    public String getDoi() { return doi; }
 }

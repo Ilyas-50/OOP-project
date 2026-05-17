@@ -1,6 +1,5 @@
 package core;
 
-import Exe.*;
 import academic.*;
 import exceptions.CreditLimitExceededException;
 import exceptions.LowHIndexException;
@@ -226,7 +225,6 @@ public class UniversitySystem {
 
     public void showStudentMenu() {
         Student student = (Student) currentUser;
-
         System.out.println("1. View My Courses");
         System.out.println("2. View Transcript (Marks)");
         System.out.println("3. Register to a Course");

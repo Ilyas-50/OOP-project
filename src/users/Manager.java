@@ -5,9 +5,12 @@ import academic.Faculty;
 import academic.Lesson;
 import academic.ManagerType;
 import core.DataStorage;
-
 import java.util.*;
 
+/**
+ * Manager employee with administrative academic duties.
+ * Two types: OR (Office of Registrar) and DEPARTMENT.
+ */
 public class Manager extends Employee {
 
     private ManagerType managerType;
@@ -16,6 +19,9 @@ public class Manager extends Employee {
         super();
     }
 
+    /**
+     * Prints university-wide academic statistics grouped by faculty.
+     */
     public void printStatisticalReport() {
         DataStorage storage = DataStorage.getInstance();
         System.out.println("\n--- Statistical Report ---");
@@ -41,6 +47,9 @@ public class Manager extends Employee {
         }
     }
 
+    /**
+     * Adds a new course to the system.
+     */
     public void addCourse(Course course) {
         DataStorage storage = DataStorage.getInstance();
         storage.getCourses().add(course);
@@ -49,6 +58,9 @@ public class Manager extends Employee {
         System.out.println("Course " + course.getCourseName() + " added successfully.");
     }
 
+    /**
+     * Assigns a course to a teacher if not already assigned.
+     */
     public void assignCourseToTeacher(Teacher teacher, Course course) {
         if (!teacher.getCourses().contains(course)) {
             teacher.addCourse(course);
@@ -58,6 +70,9 @@ public class Manager extends Employee {
         }
     }
 
+    /**
+     * Adds a lesson to a teacher's schedule.
+     */
     public void addLessonToTeacher(Teacher teacher, Lesson lesson) {
         teacher.addLesson(lesson);
         DataStorage.getInstance().addLog("Manager " + this.getLastName()
